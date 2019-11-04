@@ -21,6 +21,15 @@ targetCompatibility = 1.8
 dependencies {
     compile  "org.embulk:embulk-core:0.9.17"
     provided "org.embulk:embulk-core:0.9.17"
+
+    compile group: 'com.github.shyiko', name: 'mysql-binlog-connector-java', version: '0.20.1'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.18'
+    provided group: 'mysql', name: 'mysql-connector-java', version: '8.0.18'
+
+    compileOnly group: 'org.projectlombok', name: 'lombok', version:'1.18.10'
+    provided group: 'org.projectlombok', name: 'lombok', version:'1.18.10'
+
+    // implementation group: 'org.projectlombok', name: 'lombok', version:'1.18.10'
     // compile "YOUR_JAR_DEPENDENCY_GROUP:YOUR_JAR_DEPENDENCY_MODULE:YOUR_JAR_DEPENDENCY_VERSION"
     testCompile "junit:junit:4.+"
 }
