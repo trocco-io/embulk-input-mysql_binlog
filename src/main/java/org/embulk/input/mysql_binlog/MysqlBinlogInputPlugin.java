@@ -20,28 +20,6 @@ import org.embulk.spi.SchemaConfig;
 public class MysqlBinlogInputPlugin
         implements InputPlugin
 {
-    public interface PluginTask
-            extends Task
-    {
-        // configuration option 1 (required integer)
-        @Config("option1")
-        public int getOption1();
-
-        // configuration option 2 (optional string, null is not allowed)
-        @Config("option2")
-        @ConfigDefault("\"myvalue\"")
-        public String getOption2();
-
-        // configuration option 3 (optional string, null is allowed)
-        @Config("option3")
-        @ConfigDefault("null")
-        public Optional<String> getOption3();
-
-        // if you get schema from config
-        @Config("columns")
-        public SchemaConfig getColumns();
-    }
-
     @Override
     public ConfigDiff transaction(ConfigSource config,
             InputPlugin.Control control)
