@@ -1,27 +1,49 @@
 # Mysql Binlog input plugin for Embulk
 
-TODO: Write short description here and build.gradle file.
+**This plugin is under development**.
+MySQL input plugin for Embulk loads data by binlog.
 
 ## Overview
 
 * **Plugin type**: input
-* **Resume supported**: yes
-* **Cleanup supported**: yes
+* **Resume supported**: no
+* **Cleanup supported**: no
 * **Guess supported**: no
 
 ## Configuration
 
-- **option1**: description (integer, required)
-- **option2**: description (string, default: `"myvalue"`)
-- **option3**: description (string, default: `null`)
+- **host**: MySQL host (string, required)
+- **port**: MySQL port (integer, default: `3306`)
+- **database**: MySQL database (string, required)
+- **user**: MySQL user (string, required)
+- **password**: MySQL password (string, required)
+- **binlog_filename**: MySQL binlog filename (string, required)
+- **binlog_position**: MySQL binlog postion (integer, required)
+- **enable_metadata**: flag to add metadata to each row (bool, default: `true`)
+- **metadata_prefix**: metadata prefix (string, default: `_`)
+- **columns**: MySQL column
+    - name: name of the column
+    - type: data type of the column
+    - format: timestamp format
 
 ## Example
 
 ```yaml
 in:
   type: mysql_binlog
-  option1: example1
-  option2: example2
+  host: localhost 
+  port: 3306
+  database: test
+  user: username
+  password: password
+  binlog_filename: mysql-binlog.00001
+  binlog_position: 4
+  enable_metadata: true
+  metadata_prefix: _trocco
+  columns:
+    - {name: id, type: long}
+    - {name: name, type: string}
+  
 ```
 
 
