@@ -2,6 +2,7 @@ package org.embulk.input.mysql_binlog.handler;
 
 import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.UpdateRowsEventData;
+import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.manager.TableManager;
 import org.embulk.input.mysql_binlog.model.Cell;
 import org.embulk.input.mysql_binlog.model.Row;
@@ -15,9 +16,11 @@ import java.util.stream.Collectors;
 
 public class UpdateEventHandler implements BinlogEventHandler {
     private final TableManager tableManager;
+    private final MysqlBinlogManager binlogManager;
 
-    public UpdateEventHandler(TableManager tableManager) {
+    public UpdateEventHandler(TableManager tableManager, MysqlBinlogManager binlogManager) {
         this.tableManager = tableManager;
+        this.binlogManager = binlogManager;
     }
 
     @Override

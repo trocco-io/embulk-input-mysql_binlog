@@ -2,6 +2,7 @@ package org.embulk.input.mysql_binlog;
 
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 import org.embulk.config.Config;
@@ -11,15 +12,17 @@ import org.embulk.config.ConfigSource;
 import org.embulk.config.Task;
 import org.embulk.config.TaskReport;
 import org.embulk.config.TaskSource;
-import org.embulk.spi.Exec;
-import org.embulk.spi.InputPlugin;
-import org.embulk.spi.PageOutput;
-import org.embulk.spi.Schema;
-import org.embulk.spi.SchemaConfig;
+import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
+import org.embulk.spi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MysqlBinlogInputPlugin
         implements InputPlugin
 {
+    private final Logger logger = LoggerFactory.getLogger(MysqlBinlogInputPlugin.class);
+
+
     @Override
     public ConfigDiff transaction(ConfigSource config,
             InputPlugin.Control control)
@@ -54,9 +57,23 @@ public class MysqlBinlogInputPlugin
             PageOutput output)
     {
         PluginTask task = taskSource.loadTask(PluginTask.class);
+        try {
+            try (PageBuilder pageBuilder = getPageBuilder(schema, output)) {
+                MysqlBinlogManager binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
+                binlogManager.connect();
+            }
+        } catch (Exception e) {
+            // TODO: handle error
+            System.out.println(e.getMessage());
+        }
 
-        // Write your code here :)
-        throw new UnsupportedOperationException("MysqlBinlogInputPlugin.run method is not implemented yet");
+        return Exec.newTaskReport();
+    }
+
+    @VisibleForTesting
+    protected PageBuilder getPageBuilder(final Schema schema, final PageOutput output)
+    {
+        return new PageBuilder(Exec.getBufferAllocator(), schema, output);
     }
 
     @Override
