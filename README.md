@@ -18,6 +18,7 @@ MySQL input plugin for Embulk loads data by binlog.
 - **port**: MySQL port (integer, default: `3306`)
 - **database**: MySQL database (string, required)
 - **user**: MySQL user (string, required)
+- **table**: MySQL user (string, required)
 - **password**: MySQL password (string, required)
 - **binlog_filename**: MySQL binlog filename (string, required)
 - **binlog_position**: MySQL binlog postion (integer, required)
@@ -36,6 +37,7 @@ in:
   host: localhost 
   port: 3306
   database: test
+  table: test
   user: username
   password: password
   binlog_filename: mysql-binlog.00001

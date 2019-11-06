@@ -3,9 +3,12 @@ package org.embulk.input.mysql_binlog.manager;
 import com.github.shyiko.mysql.binlog.event.TableMapEventData;
 import com.github.shyiko.mysql.binlog.event.deserialization.ColumnType;
 import lombok.Getter;
+import org.embulk.input.mysql_binlog.MysqlBinlogInputPlugin;
 import org.embulk.input.mysql_binlog.model.Column;
 import org.embulk.input.mysql_binlog.model.DbInfo;
 import org.embulk.input.mysql_binlog.model.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,6 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 public class TableManager {
+    static {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("jdbc client not found");
+        }
+    }
+    private final Logger logger = LoggerFactory.getLogger(TableManager.class);
     private Map<Long, Table> tableInfo;
     private DbInfo dbInfo;
 
