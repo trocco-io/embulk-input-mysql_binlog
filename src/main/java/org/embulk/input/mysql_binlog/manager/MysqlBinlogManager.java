@@ -2,6 +2,8 @@ package org.embulk.input.mysql_binlog.manager;
 
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.EventType;
+import org.embulk.input.mysql_binlog.MysqlBinlogAccessor;
+import org.embulk.input.mysql_binlog.MysqlBinlogColumnVisitor;
 import org.embulk.input.mysql_binlog.MysqlBinlogParser;
 import org.embulk.input.mysql_binlog.PluginTask;
 import org.embulk.input.mysql_binlog.handler.DeleteEventHandler;
@@ -9,8 +11,11 @@ import org.embulk.input.mysql_binlog.handler.InsertEventHandler;
 import org.embulk.input.mysql_binlog.handler.TableMapEventHandler;
 import org.embulk.input.mysql_binlog.handler.UpdateEventHandler;
 import org.embulk.input.mysql_binlog.model.DbInfo;
+import org.embulk.input.mysql_binlog.model.Row;
 import org.embulk.spi.PageBuilder;
 import org.embulk.spi.Schema;
+
+import java.util.List;
 
 public class MysqlBinlogManager {
     private final MysqlBinlogParser parser = new MysqlBinlogParser();
@@ -29,6 +34,13 @@ public class MysqlBinlogManager {
         this.tableManager = new TableManager(this.dbInfo, task.getTable());
         this.registerHandler();
         this.client = this.initClient();
+    }
+
+    public void addRows(List<Row> rows){
+        for (Row row: rows) {
+            this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(row), this.pageBuilder, this.task));
+            this.pageBuilder.addRecord();
+        }
     }
 
     public void connect(){

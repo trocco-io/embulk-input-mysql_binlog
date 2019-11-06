@@ -28,12 +28,7 @@ public class InsertEventHandler implements BinlogEventHandler {
             return Collections.emptyList();
         }
         List<Row> rows = table.convertRows(writeEvent.getRows());
-        for (Row row: rows) {
-            for (Cell cell : row.getCells()) {
-                System.out.println(cell.getColumn().getName());
-                System.out.println(cell.getValueWithString());
-            }
-        }
+        this.binlogManager.addRows(rows);
         return Collections.emptyList();
     }
 }

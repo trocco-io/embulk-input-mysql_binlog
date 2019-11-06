@@ -15,6 +15,7 @@ public class Cell {
     private Object value;
     private Column column;
 
+    // TODO: should be nullable?
     public String getValueWithString(){
         if (value == null) {
             return "null";
