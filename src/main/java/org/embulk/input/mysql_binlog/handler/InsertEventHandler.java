@@ -24,6 +24,8 @@ public class InsertEventHandler implements BinlogEventHandler {
     public List<String> handle(Event event) {
         WriteRowsEventData writeEvent = event.getData();
         Table table = tableManager.getTableInfo(writeEvent.getTableId());
+
+        // TODO: this should be handle by binlog manager
         if (!table.getTableName().equals(tableManager.getTargetTableName())){
             return Collections.emptyList();
         }
