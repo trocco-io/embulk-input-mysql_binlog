@@ -5,6 +5,7 @@
 
 MySQL input plugin for Embulk loads data by binlog.
 
+
 ## Overview
 
 * **Plugin type**: input
@@ -50,6 +51,9 @@ in:
   
 ```
 
+### Supported MySQL version
+
+MySQL > 5.6.2, due to crush safe
 
 ## Build
 
