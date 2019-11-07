@@ -1,0 +1,17 @@
+[mysqld]
+# Binary log
+log-bin=mysql-bin
+server-id=1
+expire_logs_days=7
+binlog_format=row
+binlog_row_image=full
+
+# GTID enable
+# gtid_mode=ON
+# enforce-gtid-consistency
+
+# Related settings
+# What this for
+innodb_flush_log_at_trx_commit=1
+sync_binlog=1
+sysdate_is_now
