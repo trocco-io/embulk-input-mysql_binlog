@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  # MySQL
+  db:
+    image: mysql:5.7
+    container_name: mysql_host
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      TZ: 'Asia/Tokyo'
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./ci/custom.cnf:/etc/mysql/conf.d/my.cnf
+      - ./ci/sql:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
