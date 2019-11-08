@@ -51,6 +51,7 @@ public class MysqlBinlogManager {
             // TODO: handle error proper
             System.out.println(e.getMessage());
         }
+        this.pageBuilder.finish();
     }
 
     private BinaryLogClient initClient(){
