@@ -1,12 +1,11 @@
 DROP DATABASE IF EXISTS test;
 CREATE DATABASE test;
 USE test;
-DROP TABLE IF EXISTS name;
+DROP TABLE IF EXISTS test;
  
-CREATE TABLE name (
+CREATE TABLE test (
 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 name TEXT NOT NULL
-)DEFAULT CHARACTER SET=utf8;
+)DEFAULT CHARACTER SET=utf8mb4;
  
-INSERT INTO name (name) VALUES ("foo"),("bar"),("baz");
- 
+INSERT INTO test (name) VALUES ("foo"),("bar"),("baz");
