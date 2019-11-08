@@ -13,7 +13,7 @@ public class MysqlBinlogAccessor {
 
     public String get(String name){
         for (Cell cell:
-             row.getCells()) {
+             this.row.getCells()) {
             if (cell.getColumn().getName().equals(name)){
                 return cell.getValueWithString();
             }
