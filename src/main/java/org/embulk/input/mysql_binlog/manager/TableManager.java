@@ -84,4 +84,8 @@ public class TableManager {
 
         }
     }
+
+    public void putTableInfo(long tableId, Table table) {
+        this.tableInfo.put(tableId, table);
+    }
 }
