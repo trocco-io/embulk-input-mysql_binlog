@@ -9,11 +9,15 @@ import javax.xml.bind.DatatypeConverter;
 
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class Cell {
     private Object value;
     private Column column;
+
+    public Cell(Object value, Column column){
+        this.value = value;
+        this.column = column;
+    }
 
     // TODO: should be nullable?
     public String getValueWithString(){
@@ -22,6 +26,7 @@ public class Cell {
         }
         switch (column.getJdbcType()){
             case BIT:
+            case BOOLEAN:
             case TINYINT:
             case SMALLINT:
             case INTEGER:
@@ -47,4 +52,5 @@ public class Cell {
                 throw new RuntimeException("unknown data type " + this);
         }
     }
+
 }

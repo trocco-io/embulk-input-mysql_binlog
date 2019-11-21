@@ -30,7 +30,7 @@ public class InsertEventHandler implements BinlogEventHandler {
             return Collections.emptyList();
         }
         List<Row> rows = table.convertRows(writeEvent.getRows());
-        this.binlogManager.addRows(rows);
+        this.binlogManager.addRows(rows, false);
         return Collections.emptyList();
     }
 }

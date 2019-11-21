@@ -2,19 +2,22 @@ package org.embulk.input.mysql_binlog.manager;
 
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.EventType;
-import org.embulk.input.mysql_binlog.MysqlBinlogAccessor;
-import org.embulk.input.mysql_binlog.MysqlBinlogColumnVisitor;
-import org.embulk.input.mysql_binlog.MysqlBinlogParser;
-import org.embulk.input.mysql_binlog.PluginTask;
+import com.github.shyiko.mysql.binlog.event.deserialization.ColumnType;
+import org.embulk.input.mysql_binlog.*;
 import org.embulk.input.mysql_binlog.handler.DeleteEventHandler;
 import org.embulk.input.mysql_binlog.handler.InsertEventHandler;
 import org.embulk.input.mysql_binlog.handler.TableMapEventHandler;
 import org.embulk.input.mysql_binlog.handler.UpdateEventHandler;
+import org.embulk.input.mysql_binlog.model.Cell;
+import org.embulk.input.mysql_binlog.model.Column;
 import org.embulk.input.mysql_binlog.model.DbInfo;
 import org.embulk.input.mysql_binlog.model.Row;
 import org.embulk.spi.PageBuilder;
 import org.embulk.spi.Schema;
 
+import java.sql.JDBCType;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MysqlBinlogManager {
@@ -25,6 +28,8 @@ public class MysqlBinlogManager {
     private TableManager tableManager;
     private DbInfo dbInfo;
     private BinaryLogClient client;
+    private Column deleteFlagColumn;
+    private Column updatedAtColumn;
 
     public MysqlBinlogManager(PluginTask task, PageBuilder pageBuilder, Schema schema){
         this.task = task;
@@ -34,6 +39,24 @@ public class MysqlBinlogManager {
         this.tableManager = new TableManager(this.dbInfo, task.getTable());
         this.registerHandler();
         this.client = this.initClient();
+        this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task), ColumnType.TINY, JDBCType.BOOLEAN);
+        this.updatedAtColumn = new Column(MysqlBinlogUtil.getUpdateAtColumnName(task), ColumnType.TIMESTAMP_V2, JDBCType.TIMESTAMP);
+    }
+    public void addRows(List<Row> rows, boolean deleteFlag){
+        for (Row row: rows) {
+            List<Cell> cells = row.getCells();
+            Cell deleteFlagCell = new Cell(deleteFlag, deleteFlagColumn);
+            cells.add(deleteFlagCell);
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            // TODO: use default time stamp format
+            String ts = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").format(now);
+            Cell updatedAtCell = new Cell(ts, updatedAtColumn);
+            cells.add(updatedAtCell);
+            Row newRow = new Row(cells);
+
+            this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow), this.pageBuilder, this.task));
+            this.pageBuilder.addRecord();
+        }
     }
 
     public void addRows(List<Row> rows){

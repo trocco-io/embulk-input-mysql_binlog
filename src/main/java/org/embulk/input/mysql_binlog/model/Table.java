@@ -29,9 +29,8 @@ public class Table {
     }
 
     private Row convertRow(Serializable[] rawRow){
-        Row row = new Row();
         List<Cell> cells = new ArrayList<>();
-        row.setCells(cells);
+        Row row = new Row(cells);
         for (int i = 0; i < rawRow.length; i++){
             Column column = columns.get(i);
             cells.add(new Cell(rawRow[i], column));

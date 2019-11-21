@@ -4,12 +4,14 @@ import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import com.google.common.collect.ImmutableList;
 import org.embulk.config.ConfigDiff;
 import org.embulk.config.ConfigSource;
 import org.embulk.config.TaskReport;
 import org.embulk.config.TaskSource;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.spi.*;
+import org.embulk.spi.type.Types;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,7 @@ public class MysqlBinlogInputPlugin
     {
         PluginTask task = config.loadConfig(PluginTask.class);
 
-        Schema schema = task.getColumns().toSchema();
+        Schema schema = buildSchema(task);
         int taskCount = 1;  // number of run() method calls
 
         return resume(task.dump(), schema, taskCount, control);
@@ -64,6 +66,23 @@ public class MysqlBinlogInputPlugin
         }
 
         return Exec.newTaskReport();
+    }
+
+    private Schema buildSchema(PluginTask task){
+        int i = 0;
+        // add meta data
+        // todo add metadata based on config
+        ImmutableList.Builder<Column> builder = ImmutableList.builder();
+        for (ColumnConfig column : task.getColumns().getColumns()) {
+            Column outputColumn = new Column(i++, column.getName(), column.getType());
+            builder.add(outputColumn);
+        }
+        Column deleteFlagColumn = new Column(i++, MysqlBinlogUtil.getUpdateAtColumnName(task), Types.BOOLEAN);
+        builder.add(deleteFlagColumn);
+        Column updatedAtColumn = new Column(i++, MysqlBinlogUtil.getUpdateAtColumnName(task), Types.TIMESTAMP);
+        builder.add(updatedAtColumn);
+
+        return new Schema(builder.build());
     }
 
     @VisibleForTesting
