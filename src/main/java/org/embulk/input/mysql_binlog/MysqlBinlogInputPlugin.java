@@ -87,7 +87,7 @@ public class MysqlBinlogInputPlugin
             Column outputColumn = new Column(i++, column.getName(), column.getType());
             builder.add(outputColumn);
         }
-        Column deleteFlagColumn = new Column(i++, MysqlBinlogUtil.getUpdateAtColumnName(task), Types.BOOLEAN);
+        Column deleteFlagColumn = new Column(i++, MysqlBinlogUtil.getDeleteFlagName(task), Types.BOOLEAN);
         builder.add(deleteFlagColumn);
         Column updatedAtColumn = new Column(i++, MysqlBinlogUtil.getUpdateAtColumnName(task), Types.TIMESTAMP);
         builder.add(updatedAtColumn);
