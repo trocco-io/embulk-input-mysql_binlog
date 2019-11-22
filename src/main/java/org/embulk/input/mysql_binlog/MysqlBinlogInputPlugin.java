@@ -1,5 +1,6 @@
 package org.embulk.input.mysql_binlog;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -39,8 +40,15 @@ public class MysqlBinlogInputPlugin
             Schema schema, int taskCount,
             InputPlugin.Control control)
     {
+        PluginTask task = taskSource.loadTask(PluginTask.class);
         control.run(taskSource, schema, taskCount);
-        return Exec.newConfigDiff();
+
+
+        // build next config
+        ConfigDiff configDiff = Exec.newConfigDiff();
+        configDiff.set("binlog_filename", MysqlBinlogUtil.getVal("binlog_filename"));
+        configDiff.set("binlog_position", Integer.parseInt(MysqlBinlogUtil.getVal("binlog_position")));
+        return configDiff;
     }
 
     @Override
@@ -58,15 +66,15 @@ public class MysqlBinlogInputPlugin
         PluginTask task = taskSource.loadTask(PluginTask.class);
         try {
             try (PageBuilder pageBuilder = getPageBuilder(schema, output)) {
-                binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
-                binlogManager.connect();
+                this.binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
+                this.binlogManager.connect();
             }
         } catch (Exception e) {
             // TODO: handle error
             System.out.println(e.getMessage());
         }
-        System.out.println(binlogManager.getBinlogFilename());
-        System.out.println(binlogManager.getBinlogPosition());
+        MysqlBinlogUtil.setVal("binlog_filename", this.binlogManager.getBinlogFilename());
+        MysqlBinlogUtil.setVal("binlog_position", String.valueOf(this.binlogManager.getBinlogPosition()));
         return Exec.newTaskReport();
     }
 

@@ -6,7 +6,7 @@ in:
   table: test
   user: root
   password: root
-  binlog_filename: mysql-bin.000001
+  binlog_filename: mysql-bin.000006
   binlog_position: 4
   enable_metadata: true
   metadata_prefix: _trocco
