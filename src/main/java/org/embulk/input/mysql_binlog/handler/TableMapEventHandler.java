@@ -2,6 +2,7 @@ package org.embulk.input.mysql_binlog.handler;
 
 
 import com.github.shyiko.mysql.binlog.event.Event;
+import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
 import com.github.shyiko.mysql.binlog.event.TableMapEventData;
 import org.embulk.input.mysql_binlog.manager.TableManager;
 

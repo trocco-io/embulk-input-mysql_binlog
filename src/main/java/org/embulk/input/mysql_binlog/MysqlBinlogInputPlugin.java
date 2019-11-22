@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 public class MysqlBinlogInputPlugin
         implements InputPlugin
 {
+    private MysqlBinlogManager binlogManager;
     private final Logger logger = LoggerFactory.getLogger(MysqlBinlogInputPlugin.class);
 
 
@@ -57,14 +58,15 @@ public class MysqlBinlogInputPlugin
         PluginTask task = taskSource.loadTask(PluginTask.class);
         try {
             try (PageBuilder pageBuilder = getPageBuilder(schema, output)) {
-                MysqlBinlogManager binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
+                binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
                 binlogManager.connect();
             }
         } catch (Exception e) {
             // TODO: handle error
             System.out.println(e.getMessage());
         }
-
+        System.out.println(binlogManager.getBinlogFilename());
+        System.out.println(binlogManager.getBinlogPosition());
         return Exec.newTaskReport();
     }
 

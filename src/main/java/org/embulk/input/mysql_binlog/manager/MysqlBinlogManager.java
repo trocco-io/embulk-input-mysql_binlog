@@ -4,10 +4,7 @@ import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.github.shyiko.mysql.binlog.event.deserialization.ColumnType;
 import org.embulk.input.mysql_binlog.*;
-import org.embulk.input.mysql_binlog.handler.DeleteEventHandler;
-import org.embulk.input.mysql_binlog.handler.InsertEventHandler;
-import org.embulk.input.mysql_binlog.handler.TableMapEventHandler;
-import org.embulk.input.mysql_binlog.handler.UpdateEventHandler;
+import org.embulk.input.mysql_binlog.handler.*;
 import org.embulk.input.mysql_binlog.model.Cell;
 import org.embulk.input.mysql_binlog.model.Column;
 import org.embulk.input.mysql_binlog.model.DbInfo;
@@ -30,6 +27,8 @@ public class MysqlBinlogManager {
     private BinaryLogClient client;
     private Column deleteFlagColumn;
     private Column updatedAtColumn;
+    private String binlogFilename;
+    private long binlogPosition;
 
     public MysqlBinlogManager(PluginTask task, PageBuilder pageBuilder, Schema schema){
         this.task = task;
@@ -41,6 +40,8 @@ public class MysqlBinlogManager {
         this.client = this.initClient();
         this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task), ColumnType.TINY, JDBCType.BOOLEAN);
         this.updatedAtColumn = new Column(MysqlBinlogUtil.getUpdateAtColumnName(task), ColumnType.TIMESTAMP_V2, JDBCType.TIMESTAMP);
+        this.binlogFilename = task.getBinlogFilename();
+        this.binlogPosition = task.getBinlogPosition();
     }
     public void addRows(List<Row> rows, boolean deleteFlag){
         for (Row row: rows) {
@@ -77,6 +78,22 @@ public class MysqlBinlogManager {
         this.pageBuilder.finish();
     }
 
+    public void setBinlonFilename(String binlogFilename){
+        this.binlogFilename = binlogFilename;
+    }
+
+    public String getBinlogFilename() {
+        return binlogFilename;
+    }
+
+    public void setBinlogPosition(long binglogPosition){
+        this.binlogPosition = binglogPosition;
+    }
+
+    public long getBinlogPosition() {
+        return binlogPosition;
+    }
+
     private BinaryLogClient initClient(){
         BinaryLogClient client = new BinaryLogClient(this.dbInfo.getHost(), this.dbInfo.getPort(), this.dbInfo.getUser(), this.dbInfo.getPassword());
         client.setBinlogFilename(this.task.getBinlogFilename());
@@ -97,5 +114,6 @@ public class MysqlBinlogManager {
         this.parser.registerHandler(new UpdateEventHandler(this.tableManager, this), EventType.UPDATE_ROWS, EventType.EXT_UPDATE_ROWS);
         this.parser.registerHandler(new DeleteEventHandler(this.tableManager, this), EventType.DELETE_ROWS, EventType.EXT_DELETE_ROWS);
         this.parser.registerHandler(new TableMapEventHandler(this.tableManager), EventType.TABLE_MAP);
+        this.parser.registerHandler(new RotateEventHandler(this.tableManager,this), EventType.ROTATE);
     }
 }

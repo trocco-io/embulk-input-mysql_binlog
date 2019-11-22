@@ -2,6 +2,7 @@ package org.embulk.input.mysql_binlog.handler;
 
 import com.github.shyiko.mysql.binlog.event.DeleteRowsEventData;
 import com.github.shyiko.mysql.binlog.event.Event;
+import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.manager.TableManager;
 import org.embulk.input.mysql_binlog.model.Cell;
@@ -22,6 +23,7 @@ public class DeleteEventHandler implements BinlogEventHandler {
 
     @Override
     public List<String> handle(Event event) {
+        EventHeaderV4 header = event.getHeader();
         DeleteRowsEventData deleteEvent = event.getData();
         Table table = tableManager.getTableInfo(deleteEvent.getTableId());
         if (!table.getTableName().equals(tableManager.getTargetTableName())){
@@ -29,6 +31,7 @@ public class DeleteEventHandler implements BinlogEventHandler {
         }
         List<Row> rows = table.convertRows(deleteEvent.getRows());
         this.binlogManager.addRows(rows, true);
+        this.binlogManager.setBinlogPosition(header.getNextPosition());
         return Collections.emptyList();
     }
 }
