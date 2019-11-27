@@ -21,9 +21,11 @@ MySQL input plugin for Embulk loads data by binlog.
 - **user**: MySQL user (string, required)
 - **table**: MySQL user (string, required)
 - **password**: MySQL password (string, required)
-- **binlog_filename**: MySQL binlog filename (string, required)
-- **binlog_position**: MySQL binlog postion (integer, required)
-- **enable_metadata**: flag to add metadata to each row (bool, default: `true`)
+- **from_binlog_filename**: The beginning of MySQL binlog filename (string, required)
+- **from_binlog_position**: The beginning of MySQL binlog position (integer, required)
+- **to_binlog_filename**: The end of MySQL binlog filename (string, optional) if to_binlog_filename is provided and to_binlog_position is omitted, this plugin stop fetching date just after binlog rotation to this file. if to_binlog_filename is omitted, plugin stops at the end of binlog.
+- **to_binlog_position**: The end of MySQL binlog position (integer, optional) if to_binlog_filename is omitted, plugin stops at the end of binlog.
+- **enable_metadata**: flag to add metadata(delete_flag, synced_at) to each row (bool, default: `true`)
 - **metadata_prefix**: metadata prefix (string, default: `_`)
 - **columns**: MySQL column
     - name: name of the column

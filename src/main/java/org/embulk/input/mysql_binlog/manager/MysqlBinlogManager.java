@@ -27,8 +27,6 @@ public class MysqlBinlogManager {
     private BinaryLogClient client;
     private Column deleteFlagColumn;
     private Column updatedAtColumn;
-    private String binlogFilename;
-    private long binlogPosition;
 
     public MysqlBinlogManager(PluginTask task, PageBuilder pageBuilder, Schema schema){
         this.task = task;
@@ -37,11 +35,11 @@ public class MysqlBinlogManager {
         this.setDbInfo();
         this.tableManager = new TableManager(this.dbInfo, task.getTable());
         this.registerHandler();
-        this.client = this.initClient();
         this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task), ColumnType.TINY, JDBCType.BOOLEAN);
         this.updatedAtColumn = new Column(MysqlBinlogUtil.getUpdateAtColumnName(task), ColumnType.TIMESTAMP_V2, JDBCType.TIMESTAMP);
-        this.binlogFilename = task.getBinlogFilename();
-        this.binlogPosition = task.getBinlogPosition();
+        this.setBinlogFilename(task.getFromBinlogFilename());
+        this.setBinlogPosition(task.getFromBinlogPosition());
+        this.client = this.initClient();
     }
     public void addRows(List<Row> rows, boolean deleteFlag){
         for (Row row: rows) {
@@ -50,6 +48,7 @@ public class MysqlBinlogManager {
             cells.add(deleteFlagCell);
             Timestamp now = new Timestamp(System.currentTimeMillis());
             // TODO: use default time stamp format
+            // yyyy-MM-dd HH:mm:ssz would be good
             String ts = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").format(now);
             Cell updatedAtCell = new Cell(ts, updatedAtColumn);
             cells.add(updatedAtCell);
@@ -78,28 +77,28 @@ public class MysqlBinlogManager {
         this.pageBuilder.finish();
     }
 
-    public void setBinlonFilename(String binlogFilename){
-        this.binlogFilename = binlogFilename;
+    public void setBinlogFilename(String binlogFilename){
+        MysqlBinlogPositionStore.setCurrentBinlogFilename(binlogFilename);
     }
 
     public String getBinlogFilename() {
-        return binlogFilename;
+        return MysqlBinlogPositionStore.getCurrentBinlogFilename();
     }
 
-    public void setBinlogPosition(long binglogPosition){
-        this.binlogPosition = binglogPosition;
+    public void setBinlogPosition(long binlogPosition){
+        MysqlBinlogPositionStore.setCurrentBinlogPosition(binlogPosition);
     }
 
     public long getBinlogPosition() {
-        return binlogPosition;
+        return MysqlBinlogPositionStore.getToBinlogPosition();
     }
 
     private BinaryLogClient initClient(){
         BinaryLogClient client = new BinaryLogClient(this.dbInfo.getHost(), this.dbInfo.getPort(), this.dbInfo.getUser(), this.dbInfo.getPassword());
-        client.setBinlogFilename(this.task.getBinlogFilename());
-        client.setBinlogPosition(this.task.getBinlogPosition());
+        client.setBinlogFilename(this.getBinlogFilename());
+        client.setBinlogPosition(this.getBinlogPosition());
         client.registerEventListener(event -> {
-            System.out.println(event.getHeader().getEventType());
+            // TODO: pass client and handle binlog position and disconnect
             parser.handle(event);
         });
         return client;
