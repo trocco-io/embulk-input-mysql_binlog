@@ -1,13 +1,13 @@
 in:
   type: mysql_binlog
-  host: localhost 
+  host: localhost
   port: 3306
   database: test
   table: test
   user: root
   password: root
-  binlog_filename: mysql-bin.000006
-  binlog_position: 4
+  from_binlog_filename: mysql-bin.000001
+  from_binlog_position: 4
   enable_metadata: true
   metadata_prefix: _trocco
   columns:
