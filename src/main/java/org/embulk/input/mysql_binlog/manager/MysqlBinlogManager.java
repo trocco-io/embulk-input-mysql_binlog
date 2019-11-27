@@ -26,7 +26,7 @@ public class MysqlBinlogManager {
     private DbInfo dbInfo;
     private BinaryLogClient client;
     private Column deleteFlagColumn;
-    private Column updatedAtColumn;
+    private Column fetchedAtColumn;
 
     public MysqlBinlogManager(PluginTask task, PageBuilder pageBuilder, Schema schema){
         this.task = task;
@@ -36,7 +36,7 @@ public class MysqlBinlogManager {
         this.tableManager = new TableManager(this.dbInfo, task.getTable());
         this.registerHandler();
         this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task), ColumnType.TINY, JDBCType.BOOLEAN);
-        this.updatedAtColumn = new Column(MysqlBinlogUtil.getUpdateAtColumnName(task), ColumnType.TIMESTAMP_V2, JDBCType.TIMESTAMP);
+        this.fetchedAtColumn = new Column(MysqlBinlogUtil.getFetchedAtName(task), ColumnType.TIMESTAMP_V2, JDBCType.TIMESTAMP);
         this.setBinlogFilename(task.getFromBinlogFilename());
         this.setBinlogPosition(task.getFromBinlogPosition());
         this.client = this.initClient();
@@ -50,8 +50,8 @@ public class MysqlBinlogManager {
             // TODO: use default time stamp format
             // yyyy-MM-dd HH:mm:ssz would be good
             String ts = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").format(now);
-            Cell updatedAtCell = new Cell(ts, updatedAtColumn);
-            cells.add(updatedAtCell);
+            Cell fetchedAtCell = new Cell(ts, fetchedAtColumn);
+            cells.add(fetchedAtCell);
             Row newRow = new Row(cells);
 
             this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow), this.pageBuilder, this.task));
@@ -98,6 +98,8 @@ public class MysqlBinlogManager {
         client.setBinlogFilename(this.getBinlogFilename());
         client.setBinlogPosition(this.getBinlogPosition());
         client.registerEventListener(event -> {
+            // TODO: add filter
+
             // TODO: pass client and handle binlog position and disconnect
             parser.handle(event);
         });
