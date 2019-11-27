@@ -7,7 +7,7 @@ public class MysqlBinlogUtil {
         return task.getMetadataPrefix() + "delete_flag";
     }
 
-    public static String getUpdateAtColumnName(PluginTask task){
-        return task.getMetadataPrefix() + "updated_at";
+    public static String getFetchedAtName(PluginTask task){
+        return task.getMetadataPrefix() + "fetched_at";
     }
 }
