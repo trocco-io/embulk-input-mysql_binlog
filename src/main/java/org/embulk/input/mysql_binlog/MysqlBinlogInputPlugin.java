@@ -46,8 +46,10 @@ public class MysqlBinlogInputPlugin
 
         // build next config
         ConfigDiff configDiff = Exec.newConfigDiff();
-        configDiff.set("binlog_filename", MysqlBinlogUtil.getVal("binlog_filename"));
-        configDiff.set("binlog_position", Integer.parseInt(MysqlBinlogUtil.getVal("binlog_position")));
+        configDiff.set("from_binlog_filename", MysqlBinlogPositionStore.getCurrentBinlogFilename());
+        configDiff.set("from_binlog_position", MysqlBinlogPositionStore.getCurrentBinlogPosition());
+        configDiff.set("to_binlog_filename", null);
+        configDiff.set("to_binlog_position", null);
         return configDiff;
     }
 
@@ -73,8 +75,6 @@ public class MysqlBinlogInputPlugin
             // TODO: handle error
             System.out.println(e.getMessage());
         }
-        MysqlBinlogUtil.setVal("binlog_filename", this.binlogManager.getBinlogFilename());
-        MysqlBinlogUtil.setVal("binlog_position", String.valueOf(this.binlogManager.getBinlogPosition()));
         return Exec.newTaskReport();
     }
 

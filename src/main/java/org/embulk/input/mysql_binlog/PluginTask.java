@@ -21,18 +21,25 @@ public interface PluginTask
     @Config("table")
     String getTable();
 
-
     @Config("user")
     String getUser();
 
     @Config("password")
     String getPassword();
 
-    @Config("binlog_filename")
-    String getBinlogFilename();
+    @Config("from_binlog_filename")
+    String getFromBinlogFilename();
 
-    @Config("binlog_position")
-    Long getBinlogPosition();
+    @Config("from_binlog_position")
+    Long getFromBinlogPosition();
+
+    @Config("to_binlog_filename")
+    @ConfigDefault("null")
+    Optional<String> getToBinlogFilename();
+
+    @Config("to_binlog_position")
+    @ConfigDefault("null")
+    Optional<Long> getToBinlogPosition();
 
     @Config("enable_metadata")
     @ConfigDefault("true")

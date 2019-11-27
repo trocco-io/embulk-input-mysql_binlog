@@ -21,7 +21,7 @@ public class RotateEventHandler  implements BinlogEventHandler {
     public List<String> handle(Event event){
         EventHeaderV4 header = event.getHeader();
         RotateEventData rotateEvent = event.getData();
-        this.binlogManager.setBinlonFilename(rotateEvent.getBinlogFilename());
+        this.binlogManager.setBinlogFilename(rotateEvent.getBinlogFilename());
         this.binlogManager.setBinlogPosition(header.getNextPosition());
         return Collections.emptyList();
     }
