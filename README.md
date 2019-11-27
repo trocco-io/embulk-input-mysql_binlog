@@ -43,8 +43,8 @@ in:
   table: test
   user: username
   password: password
-  binlog_filename: mysql-binlog.00001
-  binlog_position: 4
+  from_binlog_filename: mysql-binlog.00001
+  from_binlog_position: 4
   enable_metadata: true
   metadata_prefix: _trocco
   columns:
