@@ -1,6 +1,5 @@
 package org.embulk.input.mysql_binlog;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -11,6 +10,7 @@ import org.embulk.config.ConfigSource;
 import org.embulk.config.TaskReport;
 import org.embulk.config.TaskSource;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
+import org.embulk.input.mysql_binlog.model.MysqlBinlogPosition;
 import org.embulk.spi.*;
 import org.embulk.spi.type.Types;
 import org.slf4j.Logger;
@@ -46,8 +46,8 @@ public class MysqlBinlogInputPlugin
 
         // build next config
         ConfigDiff configDiff = Exec.newConfigDiff();
-        configDiff.set("from_binlog_filename", MysqlBinlogPositionStore.getCurrentBinlogFilename());
-        configDiff.set("from_binlog_position", MysqlBinlogPositionStore.getCurrentBinlogPosition());
+        configDiff.set("from_binlog_filename", MysqlBinlogPosition.getCurrentBinlogFilename());
+        configDiff.set("from_binlog_position", MysqlBinlogPosition.getCurrentBinlogPosition());
         configDiff.set("to_binlog_filename", null);
         configDiff.set("to_binlog_position", null);
         return configDiff;

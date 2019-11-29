@@ -1,9 +1,9 @@
-package org.embulk.input.mysql_binlog;
+package org.embulk.input.mysql_binlog.model;
 
 /**
  * Store MySQL binlog position
  */
-public class MysqlBinlogPositionStore {
+public class MysqlBinlogPosition {
     private static String currentBinlogFilename;
     private static long currentBinlogPosition;
     private static String toBinlogFilename;
@@ -37,7 +37,7 @@ public class MysqlBinlogPositionStore {
         return toBinlogPosition;
     }
 
-    public void setToBinlogPosition(long binlogPosition){
+    public static void setToBinlogPosition(long binlogPosition){
         toBinlogPosition = binlogPosition;
     }
 }
