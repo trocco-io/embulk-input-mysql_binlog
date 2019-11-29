@@ -31,7 +31,6 @@ public class DeleteEventHandler implements BinlogEventHandler {
         }
         List<Row> rows = table.convertRows(deleteEvent.getRows());
         this.binlogManager.addRows(rows, true);
-        this.binlogManager.setBinlogPosition(header.getNextPosition());
         return Collections.emptyList();
     }
 }

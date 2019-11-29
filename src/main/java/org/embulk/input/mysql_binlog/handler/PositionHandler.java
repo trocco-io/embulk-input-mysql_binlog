@@ -2,6 +2,7 @@ package org.embulk.input.mysql_binlog.handler;
 
 import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
+import com.github.shyiko.mysql.binlog.event.EventType;
 import com.github.shyiko.mysql.binlog.event.RotateEventData;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.manager.TableManager;
@@ -20,8 +21,10 @@ public class PositionHandler implements BinlogEventHandler {
 
     public List<String> handle(Event event){
         EventHeaderV4 header = event.getHeader();
-        RotateEventData rotateEvent = event.getData();
-        this.binlogManager.setBinlogFilename(rotateEvent.getBinlogFilename());
+        if (header.getEventType() == EventType.ROTATE){
+            RotateEventData rotateEvent = event.getData();
+            this.binlogManager.setBinlogFilename(rotateEvent.getBinlogFilename());
+        }
         this.binlogManager.setBinlogPosition(header.getNextPosition());
         return Collections.emptyList();
     }

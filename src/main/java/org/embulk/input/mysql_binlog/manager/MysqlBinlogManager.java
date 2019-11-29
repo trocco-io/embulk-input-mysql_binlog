@@ -112,6 +112,6 @@ public class MysqlBinlogManager {
         this.parser.registerHandler(new UpdateEventHandler(this.tableManager, this), EventType.UPDATE_ROWS, EventType.EXT_UPDATE_ROWS);
         this.parser.registerHandler(new DeleteEventHandler(this.tableManager, this), EventType.DELETE_ROWS, EventType.EXT_DELETE_ROWS);
         this.parser.registerHandler(new TableMapEventHandler(this.tableManager), EventType.TABLE_MAP);
-        this.parser.registerHandler(new PositionHandler(this.tableManager,this), EventType.ROTATE);
+        this.parser.registerPositionHandler(new PositionHandler(this.tableManager,this));
     }
 }

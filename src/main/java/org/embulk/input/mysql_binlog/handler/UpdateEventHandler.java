@@ -38,7 +38,6 @@ public class UpdateEventHandler implements BinlogEventHandler {
         List<Serializable[]> rawRaw = updateEvent.getRows().stream().map(Map.Entry::getValue).collect(Collectors.toList());
         List<Row> rows = table.convertRows(rawRaw);
         this.binlogManager.addRows(rows, false);
-        this.binlogManager.setBinlogPosition(header.getNextPosition());
         return Collections.emptyList();
     }
 }
