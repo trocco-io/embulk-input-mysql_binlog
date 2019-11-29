@@ -11,11 +11,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class PositionHandler implements BinlogEventHandler {
-    private final TableManager tableManager;
     private final MysqlBinlogManager binlogManager;
 
-    public PositionHandler(TableManager tableManager, MysqlBinlogManager binlogManager) {
-        this.tableManager = tableManager;
+    public PositionHandler(MysqlBinlogManager binlogManager) {
         this.binlogManager = binlogManager;
     }
 

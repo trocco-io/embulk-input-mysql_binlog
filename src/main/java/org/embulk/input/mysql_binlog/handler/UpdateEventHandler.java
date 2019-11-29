@@ -25,7 +25,6 @@ public class UpdateEventHandler implements BinlogEventHandler {
 
     @Override
     public List<String> handle(Event event) {
-        EventHeaderV4 header = event.getHeader();
         UpdateRowsEventData updateEvent = event.getData();
         Table table = tableManager.getTableInfo(updateEvent.getTableId());
         if (!table.getTableName().equals(tableManager.getTargetTableName())){

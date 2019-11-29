@@ -22,7 +22,6 @@ public class DeleteEventHandler implements BinlogEventHandler {
 
     @Override
     public List<String> handle(Event event) {
-        EventHeaderV4 header = event.getHeader();
         DeleteRowsEventData deleteEvent = event.getData();
         Table table = tableManager.getTableInfo(deleteEvent.getTableId());
         if (!table.getTableName().equals(tableManager.getTargetTableName())){
