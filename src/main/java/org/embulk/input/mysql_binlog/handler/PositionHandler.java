@@ -9,11 +9,11 @@ import org.embulk.input.mysql_binlog.manager.TableManager;
 import java.util.Collections;
 import java.util.List;
 
-public class RotateEventHandler  implements BinlogEventHandler {
+public class PositionHandler implements BinlogEventHandler {
     private final TableManager tableManager;
     private final MysqlBinlogManager binlogManager;
 
-    public RotateEventHandler(TableManager tableManager, MysqlBinlogManager binlogManager) {
+    public PositionHandler(TableManager tableManager, MysqlBinlogManager binlogManager) {
         this.tableManager = tableManager;
         this.binlogManager = binlogManager;
     }
