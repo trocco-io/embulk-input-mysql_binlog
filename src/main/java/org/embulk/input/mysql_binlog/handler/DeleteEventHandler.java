@@ -5,7 +5,6 @@ import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.manager.TableManager;
-import org.embulk.input.mysql_binlog.model.Cell;
 import org.embulk.input.mysql_binlog.model.Row;
 import org.embulk.input.mysql_binlog.model.Table;
 
