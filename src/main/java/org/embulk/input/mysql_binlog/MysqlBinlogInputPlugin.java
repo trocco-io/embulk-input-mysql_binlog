@@ -77,6 +77,8 @@ public class MysqlBinlogInputPlugin
 
     private Schema buildSchema(PluginTask task){
         int i = 0;
+        // TODO: build schema based on sql
+
         // add meta data
         // todo add metadata based on config
         ImmutableList.Builder<Column> builder = ImmutableList.builder();
