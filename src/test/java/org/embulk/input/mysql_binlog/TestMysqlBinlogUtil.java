@@ -11,8 +11,9 @@ import static org.junit.Assert.*;
 
 public class TestMysqlBinlogUtil {
     private ConfigSource config;
+    private static final String BASIC_RESOURCE_PATH = "org/embulk/input/mysql_binlog/";
     private static ConfigSource loadYamlResource(TestingEmbulk embulk, String fileName) {
-        return embulk.loadYamlResource(fileName);
+        return embulk.loadYamlResource(BASIC_RESOURCE_PATH + fileName);
     }
     @Rule
     public TestingEmbulk embulk = TestingEmbulk.builder()
@@ -21,7 +22,7 @@ public class TestMysqlBinlogUtil {
 
     @Test
     public void checkMetadataKey() {
-        config = loadYamlResource(embulk, "org/embulk/input/mysql_binlog/base.yml");
+        config = loadYamlResource(embulk, "base.yml");
         PluginTask task = config.loadConfig(PluginTask.class);
         assertEquals("_trocco_delete_flag",MysqlBinlogUtil.getDeleteFlagName(task));
         assertEquals("_trocco_fetched_at",MysqlBinlogUtil.getFetchedAtName(task));
