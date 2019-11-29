@@ -11,8 +11,9 @@ import static org.junit.Assert.*;
 
 public class TestMysqlBinlogUtil {
     private ConfigSource config;
+    private static final String BASIC_RESOURCE_PATH = "org/embulk/input/mysql_binlog/";
     private static ConfigSource loadYamlResource(TestingEmbulk embulk, String fileName) {
-        return embulk.loadYamlResource(fileName);
+        return embulk.loadYamlResource(BASIC_RESOURCE_PATH + fileName);
     }
     @Rule
     public TestingEmbulk embulk = TestingEmbulk.builder()
