@@ -13,14 +13,11 @@ import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.model.MysqlBinlogPosition;
 import org.embulk.spi.*;
 import org.embulk.spi.type.Types;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MysqlBinlogInputPlugin
         implements InputPlugin
 {
     private MysqlBinlogManager binlogManager;
-    private final Logger logger = LoggerFactory.getLogger(MysqlBinlogInputPlugin.class);
 
 
     @Override

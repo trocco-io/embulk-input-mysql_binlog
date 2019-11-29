@@ -21,7 +21,7 @@ public class TestMysqlBinlogUtil {
 
     @Test
     public void checkMetadataKey() {
-        config = loadYamlResource(embulk, "base.yml");
+        config = loadYamlResource(embulk, "org/embulk/input/mysql_binlog/base.yml");
         PluginTask task = config.loadConfig(PluginTask.class);
         assertEquals("_trocco_delete_flag",MysqlBinlogUtil.getDeleteFlagName(task));
         assertEquals("_trocco_fetched_at",MysqlBinlogUtil.getFetchedAtName(task));
