@@ -5,10 +5,7 @@ import com.github.shyiko.mysql.binlog.event.EventType;
 import com.github.shyiko.mysql.binlog.event.deserialization.ColumnType;
 import org.embulk.input.mysql_binlog.*;
 import org.embulk.input.mysql_binlog.handler.*;
-import org.embulk.input.mysql_binlog.model.Cell;
-import org.embulk.input.mysql_binlog.model.Column;
-import org.embulk.input.mysql_binlog.model.DbInfo;
-import org.embulk.input.mysql_binlog.model.Row;
+import org.embulk.input.mysql_binlog.model.*;
 import org.embulk.spi.PageBuilder;
 import org.embulk.spi.Schema;
 
@@ -78,19 +75,19 @@ public class MysqlBinlogManager {
     }
 
     public void setBinlogFilename(String binlogFilename){
-        MysqlBinlogPositionStore.setCurrentBinlogFilename(binlogFilename);
+        MysqlBinlogPosition.setCurrentBinlogFilename(binlogFilename);
     }
 
     public String getBinlogFilename() {
-        return MysqlBinlogPositionStore.getCurrentBinlogFilename();
+        return MysqlBinlogPosition.getCurrentBinlogFilename();
     }
 
     public void setBinlogPosition(long binlogPosition){
-        MysqlBinlogPositionStore.setCurrentBinlogPosition(binlogPosition);
+        MysqlBinlogPosition.setCurrentBinlogPosition(binlogPosition);
     }
 
     public long getBinlogPosition() {
-        return MysqlBinlogPositionStore.getToBinlogPosition();
+        return MysqlBinlogPosition.getToBinlogPosition();
     }
 
     private BinaryLogClient initClient(){
