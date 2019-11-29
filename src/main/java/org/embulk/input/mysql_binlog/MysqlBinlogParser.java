@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class MysqlBinlogParser {
     private Map<EventType, BinlogEventHandler> handlers = new HashMap<>();
+    private BinlogEventHandler positionHandler;
 
     public void registerHandler(BinlogEventHandler handler, EventType... eventTypes){
         for (EventType eventType: eventTypes){
@@ -16,10 +17,15 @@ public class MysqlBinlogParser {
         }
     }
 
+    public void registerPositionHandler(BinlogEventHandler positionHandler){
+        this.positionHandler = positionHandler;
+    }
+
     public void handle(Event event){
         BinlogEventHandler handler = handlers.get(event.getHeader().getEventType());
         if (handler != null){
             handler.handle(event);
         }
+        positionHandler.handle(event);
     }
 }
