@@ -45,7 +45,7 @@ public class TableManager {
     }
 
     public void setTableInfo(TableMapEventData eventData){
-        String talbeName = eventData.getTable();
+        String tableName = eventData.getTable();
         String dbName = eventData.getDatabase();
         long tableId =  eventData.getTableId();
 
@@ -56,8 +56,8 @@ public class TableManager {
 
         try (Connection con = DriverManager.getConnection(url, dbInfo.getUser(), dbInfo.getPassword())) {
             DatabaseMetaData metaData = con.getMetaData();
-            ResultSet dbColumns = metaData.getColumns(dbName, null, talbeName, null);
-            Table table = new Table(dbName, talbeName);
+            ResultSet dbColumns = metaData.getColumns(dbName, null, tableName, null);
+            Table table = new Table(dbName, tableName);
 
             List<ColumnType> columnTypes = new ArrayList<>();
             for (byte columnType: eventData.getColumnTypes()) {
@@ -74,14 +74,42 @@ public class TableManager {
                         ColumnType.byCode(eventData.getColumnTypes()[i]& 0xFF),
                         JDBCType.valueOf(dbColumns.getInt("DATA_TYPE"))));
                 i++;
-
             }
             table.setColumns(columns);
             tableInfo.put(tableId, table);
             System.out.println(table);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
 
+    public static Table buildTable(DbInfo dbInfo, String targetTableName){
+        Table table = new Table(dbInfo.getDbName(), targetTableName);
+        List<Column> columns = new ArrayList<>();
+        DatabaseMetaData metaData = fetchDatabaseMetaData(dbInfo);
+        try {
+            ResultSet dbColumns = metaData.getColumns(dbInfo.getDbName(), null, targetTableName, null);
+            int i = 0;
+            while (dbColumns.next()) {
+                String columnName = dbColumns.getString("COLUMN_NAME");
+                columns.add(new Column(columnName,
+                        null,
+                        JDBCType.valueOf(dbColumns.getInt("DATA_TYPE"))));
+                i++;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        table.setColumns(columns);
+        return table;
+    }
+
+    public static DatabaseMetaData fetchDatabaseMetaData(DbInfo dbInfo){
+        String url = "jdbc:mysql://" + dbInfo.getHost() + ":" + dbInfo.getPort() + "/" + dbInfo.getDbName() + "?characterEncoding=UTF-8&autoReconnect=true";
+        try (Connection con = DriverManager.getConnection(url, dbInfo.getUser(), dbInfo.getPassword())) {
+            return con.getMetaData();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

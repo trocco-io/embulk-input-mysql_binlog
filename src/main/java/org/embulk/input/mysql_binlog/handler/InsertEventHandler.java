@@ -23,7 +23,7 @@ public class InsertEventHandler implements BinlogEventHandler {
     @Override
     public List<String> handle(Event event) {
         WriteRowsEventData writeEvent = event.getData();
-        // todo get table name by name
+        // TODO: get table name by name
         Table table = tableManager.getTableInfo(writeEvent.getTableId());
 
         // TODO: this should be handle by binlog manager
