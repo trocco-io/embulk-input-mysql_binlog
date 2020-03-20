@@ -1,6 +1,7 @@
 package org.embulk.input.mysql_binlog;
 
 import org.embulk.config.ConfigSource;
+import org.embulk.input.mysql_binlog.model.Ssl;
 import org.embulk.spi.InputPlugin;
 import org.embulk.test.TestingEmbulk;
 import org.junit.Rule;
@@ -31,6 +32,7 @@ public class TestMysqlBinlogInputPlugin
         assertEquals("root", task.getUser());
         assertEquals("root", task.getPassword());
         assertEquals("mysql-bin.000001", task.getFromBinlogFilename());
+        assertEquals(Ssl.DISABLE, task.getSsl());
         assertEquals(Long.valueOf(4), task.getFromBinlogPosition());
         assertTrue(task.getEnableMetadata());
         assertEquals("_trocco_", task.getMetadataPrefix());
