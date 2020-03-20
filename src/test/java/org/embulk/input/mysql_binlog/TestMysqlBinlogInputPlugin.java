@@ -37,5 +37,6 @@ public class TestMysqlBinlogInputPlugin
         assertFalse(task.getToBinlogFilename().isPresent());
         assertFalse(task.getToBinlogPosition().isPresent());
         assertNotNull(task.getColumns());
+        assertEquals("UTC", task.getDefaultTimezone());
     }
 }

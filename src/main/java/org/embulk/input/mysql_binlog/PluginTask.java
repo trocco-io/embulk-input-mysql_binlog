@@ -52,4 +52,7 @@ public interface PluginTask
     @Config("columns")
     SchemaConfig getColumns();
 
+    @Config("default_timezone")
+    @ConfigDefault("UTC")
+    String getDefaultTimezone();
 }

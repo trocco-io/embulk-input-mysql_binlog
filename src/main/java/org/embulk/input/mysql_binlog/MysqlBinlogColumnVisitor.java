@@ -90,7 +90,7 @@ public class MysqlBinlogColumnVisitor implements ColumnVisitor {
                     break;
                 }
             }
-            TimestampParser parser = TimestampParser.of(pattern, "UTC");
+            TimestampParser parser = TimestampParser.of(pattern, pluginTask.getDefaultTimezone());
             Timestamp result = parser.parse(accessor.get(column.getName()));
             pageBuilder.setTimestamp(column, result);
         } catch (Exception e) {
