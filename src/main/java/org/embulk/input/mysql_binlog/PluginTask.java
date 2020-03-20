@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import org.embulk.config.Config;
 import org.embulk.config.ConfigDefault;
 import org.embulk.config.Task;
+import org.embulk.input.mysql_binlog.model.Ssl;
 import org.embulk.spi.SchemaConfig;
 
 public interface PluginTask
@@ -52,4 +53,7 @@ public interface PluginTask
     @Config("columns")
     SchemaConfig getColumns();
 
+    @Config("ssl")
+    @ConfigDefault("\"disable\"")
+    Ssl getSsl();
 }

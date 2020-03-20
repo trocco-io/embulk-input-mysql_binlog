@@ -3,7 +3,7 @@ package org.embulk.input.mysql_binlog.manager;
 import com.github.shyiko.mysql.binlog.event.TableMapEventData;
 import com.github.shyiko.mysql.binlog.event.deserialization.ColumnType;
 import lombok.Getter;
-import org.embulk.input.mysql_binlog.MysqlBinlogInputPlugin;
+import org.embulk.input.mysql_binlog.PluginTask;
 import org.embulk.input.mysql_binlog.model.Column;
 import org.embulk.input.mysql_binlog.model.DbInfo;
 import org.embulk.input.mysql_binlog.model.Table;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public class TableManager {
     static {
@@ -27,14 +28,16 @@ public class TableManager {
     private final Logger logger = LoggerFactory.getLogger(TableManager.class);
     private Map<Long, Table> tableInfo;
     private DbInfo dbInfo;
+    private PluginTask pluginTask;
 
     @Getter
     private String targetTableName;
 
-    public TableManager(DbInfo dbInfo, String targetTableName){
+    public TableManager(DbInfo dbInfo, PluginTask pluginTask){
         this.dbInfo = dbInfo;
         this.tableInfo = new HashMap<>();
-        this.targetTableName = targetTableName;
+        this.pluginTask = pluginTask;
+        this.targetTableName = pluginTask.getTable();
     }
 
     public Table getTableInfo(Long tableId) {
@@ -52,9 +55,32 @@ public class TableManager {
         if (tableInfo.containsKey(eventData.getTableId())){
             return;
         }
-        String url = "jdbc:mysql://" + dbInfo.getHost() + ":" + dbInfo.getPort() + "/" + dbName + "?characterEncoding=UTF-8&autoReconnect=true";
+        String url = String.format("jdbc:mysql://%s:%d/%s",
+                dbInfo.getHost(), dbInfo.getPort(), dbInfo.getDbName());
 
-        try (Connection con = DriverManager.getConnection(url, dbInfo.getUser(), dbInfo.getPassword())) {
+        Properties props = new Properties();
+        props.setProperty("user", dbInfo.getUser());
+        props.setProperty("password", dbInfo.getPassword());
+        props.setProperty("characterEncoding", "UTF-8");
+        props.setProperty("autoReconnect", "true");
+
+        switch (pluginTask.getSsl()) {
+            case DISABLE:
+                props.setProperty("useSSL", "false");
+                break;
+            case ENABLE:
+                props.setProperty("useSSL", "true");
+                props.setProperty("requireSSL", "true");
+                props.setProperty("verifyServerCertificate", "false");
+                break;
+            case VERIFY:
+                props.setProperty("useSSL", "true");
+                props.setProperty("requireSSL", "true");
+                props.setProperty("verifyServerCertificate", "true");
+                break;
+        }
+
+        try (Connection con = DriverManager.getConnection(url, props)) {
             DatabaseMetaData metaData = con.getMetaData();
             ResultSet dbColumns = metaData.getColumns(dbName, null, talbeName, null);
             Table table = new Table(dbName, talbeName);
