@@ -55,4 +55,8 @@ public interface PluginTask
     @Config("default_timezone")
     @ConfigDefault("UTC")
     String getDefaultTimezone();
+
+    @Config("ssl")
+    @ConfigDefault("\"disable\"")
+    Ssl getSsl();
 }

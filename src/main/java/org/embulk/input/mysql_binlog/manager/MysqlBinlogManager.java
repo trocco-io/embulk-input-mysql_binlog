@@ -30,7 +30,7 @@ public class MysqlBinlogManager {
         this.pageBuilder = pageBuilder;
         this.schema = schema;
         this.setDbInfo();
-        this.tableManager = new TableManager(this.dbInfo, task.getTable());
+        this.tableManager = new TableManager(this.dbInfo, task);
         this.registerHandler();
         this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task), ColumnType.TINY, JDBCType.BOOLEAN);
         this.fetchedAtColumn = new Column(MysqlBinlogUtil.getFetchedAtName(task), ColumnType.TIMESTAMP_V2, JDBCType.TIMESTAMP);
