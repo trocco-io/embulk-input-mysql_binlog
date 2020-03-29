@@ -87,7 +87,7 @@ public class MysqlBinlogInputPlugin
             builder.add(outputColumn);
         }
         // add meta data schema
-        if (task.getEnableMetadataDeleteFlag()){
+        if (task.getEnableMetadataDeleted()){
             Column deleteFlagColumn = new Column(i++, MysqlBinlogUtil.getDeleteFlagName(task), Types.BOOLEAN);
             builder.add(deleteFlagColumn);
         }

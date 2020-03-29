@@ -41,7 +41,7 @@ public class MysqlBinlogManager {
     public void addRows(List<Row> rows, boolean deleteFlag){
         for (Row row: rows) {
             List<Cell> cells = row.getCells();
-            if (task.getEnableMetadataDeleteFlag()){
+            if (task.getEnableMetadataDeleted()){
                 Cell deleteFlagCell = new Cell(deleteFlag, deleteFlagColumn);
                 cells.add(deleteFlagCell);
             }
