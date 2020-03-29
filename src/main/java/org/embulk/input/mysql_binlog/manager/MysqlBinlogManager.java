@@ -41,14 +41,19 @@ public class MysqlBinlogManager {
     public void addRows(List<Row> rows, boolean deleteFlag){
         for (Row row: rows) {
             List<Cell> cells = row.getCells();
-            Cell deleteFlagCell = new Cell(deleteFlag, deleteFlagColumn);
-            cells.add(deleteFlagCell);
-            Timestamp now = new Timestamp(System.currentTimeMillis());
-            // TODO: use default time stamp format
-            // yyyy-MM-dd HH:mm:ssz would be good
-            String ts = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").format(now);
-            Cell fetchedAtCell = new Cell(ts, fetchedAtColumn);
-            cells.add(fetchedAtCell);
+            if (task.getEnableMetadataDeleteFlag()){
+                Cell deleteFlagCell = new Cell(deleteFlag, deleteFlagColumn);
+                cells.add(deleteFlagCell);
+            }
+
+            if (task.getEnableMetadataFetchedAt()){
+                Timestamp now = new Timestamp(System.currentTimeMillis());
+                // TODO: use default time stamp format
+                // yyyy-MM-dd HH:mm:ssz would be good
+                String ts = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").format(now);
+                Cell fetchedAtCell = new Cell(ts, fetchedAtColumn);
+                cells.add(fetchedAtCell);
+            }
             Row newRow = new Row(cells);
 
             this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow), this.pageBuilder, this.task));

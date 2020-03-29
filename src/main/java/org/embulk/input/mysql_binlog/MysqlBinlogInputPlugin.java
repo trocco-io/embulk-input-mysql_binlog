@@ -87,10 +87,14 @@ public class MysqlBinlogInputPlugin
             builder.add(outputColumn);
         }
         // add meta data schema
-        Column deleteFlagColumn = new Column(i++, MysqlBinlogUtil.getDeleteFlagName(task), Types.BOOLEAN);
-        builder.add(deleteFlagColumn);
-        Column fetchedAtColumn = new Column(i++, MysqlBinlogUtil.getFetchedAtName(task), Types.TIMESTAMP);
-        builder.add(fetchedAtColumn);
+        if (task.getEnableMetadataDeleteFlag()){
+            Column deleteFlagColumn = new Column(i++, MysqlBinlogUtil.getDeleteFlagName(task), Types.BOOLEAN);
+            builder.add(deleteFlagColumn);
+        }
+        if (task.getEnableMetadataFetchedAt()){
+            Column fetchedAtColumn = new Column(i++, MysqlBinlogUtil.getFetchedAtName(task), Types.TIMESTAMP);
+            builder.add(fetchedAtColumn);
+        }
 
         return new Schema(builder.build());
     }
