@@ -42,9 +42,9 @@ public interface PluginTask
     @ConfigDefault("null")
     Optional<Long> getToBinlogPosition();
 
-    @Config("enable_metadata_delete_flag")
+    @Config("enable_metadata_deleted")
     @ConfigDefault("true")
-    boolean getEnableMetadataDeleteFlag();
+    boolean getEnableMetadataDeleted();
 
     @Config("enable_metadata_fetched_at")
     @ConfigDefault("true")

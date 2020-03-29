@@ -34,7 +34,7 @@ public class TestMysqlBinlogInputPlugin
         assertEquals("mysql-bin.000001", task.getFromBinlogFilename());
         assertEquals(Ssl.DISABLE, task.getSsl());
         assertEquals(Long.valueOf(4), task.getFromBinlogPosition());
-        assertTrue(task.getEnableMetadataDeleteFlag());
+        assertTrue(task.getEnableMetadataDeleted());
         assertTrue(task.getEnableMetadataFetchedAt());
         assertEquals("_trocco_", task.getMetadataPrefix());
         assertFalse(task.getToBinlogFilename().isPresent());

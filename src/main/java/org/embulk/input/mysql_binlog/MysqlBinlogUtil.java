@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class MysqlBinlogUtil {
     public static String getDeleteFlagName(PluginTask task){
-        return task.getMetadataPrefix() + "delete_flag";
+        return task.getMetadataPrefix() + "deleted";
     }
 
     public static String getFetchedAtName(PluginTask task){
