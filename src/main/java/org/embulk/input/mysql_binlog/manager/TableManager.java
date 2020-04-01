@@ -94,8 +94,6 @@ public class TableManager {
             while (dbColumns.next()) {
                 String columnName = dbColumns.getString("COLUMN_NAME");
                 // &0xFF unsigned byte to int
-                System.out.println(columnName);
-                System.out.println(eventData.getColumnTypes()[i]& 0xFF);
                 columns.add(new Column(columnName,
                         ColumnType.byCode(eventData.getColumnTypes()[i]& 0xFF),
                         JDBCType.valueOf(dbColumns.getInt("DATA_TYPE"))));
@@ -104,7 +102,6 @@ public class TableManager {
             }
             table.setColumns(columns);
             tableInfo.put(tableId, table);
-            System.out.println(table);
         } catch (Exception e) {
             throw new RuntimeException(e);
 

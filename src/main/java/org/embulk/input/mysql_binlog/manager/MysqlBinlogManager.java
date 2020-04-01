@@ -12,6 +12,8 @@ import org.embulk.spi.Schema;
 import java.sql.JDBCType;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MysqlBinlogManager {
@@ -24,6 +26,7 @@ public class MysqlBinlogManager {
     private BinaryLogClient client;
     private Column deleteFlagColumn;
     private Column fetchedAtColumn;
+    private Column seqColumn;
 
     public MysqlBinlogManager(PluginTask task, PageBuilder pageBuilder, Schema schema){
         this.task = task;
@@ -34,6 +37,7 @@ public class MysqlBinlogManager {
         this.registerHandler();
         this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task), ColumnType.TINY, JDBCType.BOOLEAN);
         this.fetchedAtColumn = new Column(MysqlBinlogUtil.getFetchedAtName(task), ColumnType.TIMESTAMP_V2, JDBCType.TIMESTAMP);
+        this.seqColumn = new Column(MysqlBinlogUtil.getSeqName(task), ColumnType.LONG, JDBCType.BIGINT);
         this.setBinlogFilename(task.getFromBinlogFilename());
         this.setBinlogPosition(task.getFromBinlogPosition());
         this.client = this.initClient();
@@ -47,13 +51,16 @@ public class MysqlBinlogManager {
             }
 
             if (task.getEnableMetadataFetchedAt()){
-                Timestamp now = new Timestamp(System.currentTimeMillis());
-                // TODO: use default time stamp format
-                // yyyy-MM-dd HH:mm:ssz would be good
-                String ts = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").format(now);
-                Cell fetchedAtCell = new Cell(ts, fetchedAtColumn);
+                // value is stored in column visitor
+                Cell fetchedAtCell = new Cell(null, fetchedAtColumn);
                 cells.add(fetchedAtCell);
             }
+
+            if (task.getEnableMetadataSeq()) {
+                Cell seqCell = new Cell(MysqlBinlogUtil.getSeqCounter().incrementAndGet(), seqColumn);
+                cells.add(seqCell);
+            }
+
             Row newRow = new Row(cells);
 
             this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow), this.pageBuilder, this.task));

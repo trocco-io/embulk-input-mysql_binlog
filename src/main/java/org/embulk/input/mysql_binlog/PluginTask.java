@@ -50,6 +50,10 @@ public interface PluginTask
     @ConfigDefault("true")
     boolean getEnableMetadataFetchedAt();
 
+    @Config("enable_metadata_seq")
+    @ConfigDefault("true")
+    boolean getEnableMetadataSeq();
+
     @Config("metadata_prefix")
     @ConfigDefault("\"_\"")
     String getMetadataPrefix();

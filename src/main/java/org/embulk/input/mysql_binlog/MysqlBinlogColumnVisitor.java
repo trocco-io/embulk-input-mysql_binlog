@@ -1,4 +1,5 @@
 package org.embulk.input.mysql_binlog;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -78,20 +79,26 @@ public class MysqlBinlogColumnVisitor implements ColumnVisitor {
     @Override
     public void timestampColumn(Column column) {
         try {
-            List<ColumnConfig> columnConfigs = pluginTask.getColumns().getColumns();
-            String pattern = DEFAULT_TIMESTAMP_PATTERN;
-            for (ColumnConfig config : columnConfigs) {
-                if (config.getName().equals(column.getName())
-                        && config.getConfigSource() != null
-                        && config.getConfigSource().getObjectNode() != null
-                        && config.getConfigSource().getObjectNode().get("format") != null
-                        && config.getConfigSource().getObjectNode().get("format").isTextual()) {
-                    pattern = config.getConfigSource().getObjectNode().get("format").asText();
-                    break;
+            Timestamp result;
+            // meta_fetched_at need microsecond
+            if (column.getName().equals(MysqlBinlogUtil.getFetchedAtName(this.pluginTask))){
+                result = Timestamp.ofInstant(Instant.now());
+            }else {
+                List<ColumnConfig> columnConfigs = pluginTask.getColumns().getColumns();
+                String pattern = DEFAULT_TIMESTAMP_PATTERN;
+                for (ColumnConfig config : columnConfigs) {
+                    if (config.getName().equals(column.getName())
+                            && config.getConfigSource() != null
+                            && config.getConfigSource().getObjectNode() != null
+                            && config.getConfigSource().getObjectNode().get("format") != null
+                            && config.getConfigSource().getObjectNode().get("format").isTextual()) {
+                        pattern = config.getConfigSource().getObjectNode().get("format").asText();
+                        break;
+                    }
                 }
+                TimestampParser parser = TimestampParser.of(pattern, pluginTask.getDefaultTimezone());
+                result = parser.parse(accessor.get(column.getName()));
             }
-            TimestampParser parser = TimestampParser.of(pattern, pluginTask.getDefaultTimezone());
-            Timestamp result = parser.parse(accessor.get(column.getName()));
             pageBuilder.setTimestamp(column, result);
         } catch (Exception e) {
             pageBuilder.setNull(column);

@@ -96,6 +96,11 @@ public class MysqlBinlogInputPlugin
             builder.add(fetchedAtColumn);
         }
 
+        if (task.getEnableMetadataSeq()){
+            Column seqColumn = new Column(i++, MysqlBinlogUtil.getSeqName(task), Types.LONG);
+            builder.add(seqColumn);
+        }
+
         return new Schema(builder.build());
     }
 
