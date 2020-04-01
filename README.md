@@ -27,6 +27,7 @@ MySQL input plugin for Embulk loads data by binlog.
 - **to_binlog_position**: The end of MySQL binlog position (integer, optional) if to_binlog_filename is omitted, plugin stops at the end of binlog.
 - **enable_metadata_deleted**: flag to add metadata deleted to each row (bool, default: `true`)
 - **enable_metadata_fetched_at**: flag to add metadata synced_at to each row (bool, default: `true`)
+- **enable_metadata_seq**: sequence number of record (bool, default: `true`)
 - **metadata_prefix**: metadata prefix (string, default: `_`)
 - **columns**: MySQL column
     - name: name of the column

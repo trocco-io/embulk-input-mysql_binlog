@@ -36,6 +36,7 @@ public class TestMysqlBinlogInputPlugin
         assertEquals(Long.valueOf(4), task.getFromBinlogPosition());
         assertTrue(task.getEnableMetadataDeleted());
         assertTrue(task.getEnableMetadataFetchedAt());
+        assertTrue(task.getEnableMetadataSeq());
         assertEquals("_trocco_", task.getMetadataPrefix());
         assertFalse(task.getToBinlogFilename().isPresent());
         assertFalse(task.getToBinlogPosition().isPresent());
