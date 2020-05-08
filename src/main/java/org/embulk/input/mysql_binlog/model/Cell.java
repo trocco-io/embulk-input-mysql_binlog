@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 public class Cell {
     private Object value;
     private Column column;
+    // TODO: use embulk time formatter ?
     private SimpleDateFormat timeFormat =  new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat timestampFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS XXX");
