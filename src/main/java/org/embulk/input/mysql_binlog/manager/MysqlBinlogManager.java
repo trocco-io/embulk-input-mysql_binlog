@@ -9,11 +9,8 @@ import org.embulk.input.mysql_binlog.model.*;
 import org.embulk.spi.PageBuilder;
 import org.embulk.spi.Schema;
 
+import java.io.IOException;
 import java.sql.JDBCType;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class MysqlBinlogManager {
@@ -86,6 +83,14 @@ public class MysqlBinlogManager {
         this.pageBuilder.finish();
     }
 
+    public void disconnect(){
+        try {
+            this.client.disconnect();
+        } catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void setBinlogFilename(String binlogFilename){
         MysqlBinlogPosition.setCurrentBinlogFilename(binlogFilename);
     }
@@ -99,7 +104,11 @@ public class MysqlBinlogManager {
     }
 
     public long getBinlogPosition() {
-        return MysqlBinlogPosition.getToBinlogPosition();
+        return MysqlBinlogPosition.getCurrentBinlogPosition();
+    }
+
+    public PluginTask getTask(){
+        return this.task;
     }
 
     private BinaryLogClient initClient(){

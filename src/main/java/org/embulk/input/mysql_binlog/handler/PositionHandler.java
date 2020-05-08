@@ -4,6 +4,7 @@ import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.github.shyiko.mysql.binlog.event.RotateEventData;
+import org.embulk.input.mysql_binlog.PluginTask;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.manager.TableManager;
 
@@ -24,6 +25,21 @@ public class PositionHandler implements BinlogEventHandler {
             this.binlogManager.setBinlogFilename(rotateEvent.getBinlogFilename());
         }
         this.binlogManager.setBinlogPosition(header.getNextPosition());
+
+        if (isFinish(this.binlogManager.getTask(), this.binlogManager.getBinlogFilename(), this.binlogManager.getBinlogPosition())){
+            this.binlogManager.disconnect();
+        }
         return Collections.emptyList();
+    }
+
+    private boolean isFinish(PluginTask task, String filename, long position){
+        if (task.getToBinlogFilename().isPresent() && task.getToBinlogPosition().isPresent()){
+            if (task.getToBinlogFilename().get().equals(filename) && task.getToBinlogPosition().get() == position){
+                return true;
+            }else if(task.getToBinlogFilename().isPresent() && !task.getToBinlogPosition().isPresent()){
+                return task.getToBinlogFilename().get().equals(filename);
+            }
+        }
+        return false;
     }
 }
