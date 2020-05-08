@@ -18,7 +18,7 @@ import com.google.gson.JsonElement;
 public class MysqlBinlogColumnVisitor implements ColumnVisitor {
     // timestamp pattern?
     // https://github.com/embulk/embulk-input-jdbc/blob/master/embulk-input-mysql/src/main/java/org/embulk/input/mysql/getter/AbstractMySQLTimestampIncrementalHandler.java
-    private static final String DEFAULT_TIMESTAMP_PATTERN = "%Y-%m-%dT%H:%M:%S%z";
+    private static final String DEFAULT_TIMESTAMP_PATTERN = "%Y-%m-%d %H:%M:%S.%N %:z";
     private final Logger logger = LoggerFactory.getLogger(MysqlBinlogColumnVisitor.class);
 
     private final PageBuilder pageBuilder;

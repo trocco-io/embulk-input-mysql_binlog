@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.DatatypeConverter;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 
 @Data
@@ -13,6 +17,9 @@ import javax.xml.bind.DatatypeConverter;
 public class Cell {
     private Object value;
     private Column column;
+    private SimpleDateFormat timeFormat =  new SimpleDateFormat("HH:mm:ss");
+    private SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat timestampFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS XXX");
 
     public Cell(Object value, Column column){
         this.value = value;
@@ -38,10 +45,16 @@ public class Cell {
             case DECIMAL:
             case CHAR:
             case VARCHAR:
-            case TIME:
-            case TIMESTAMP:
-            case DATE:
                 return String.valueOf(value);
+            case TIME:
+                Timestamp time = new Timestamp((long) value);
+                return timeFormat.format(time);
+            case TIMESTAMP:
+                Timestamp ts = new Timestamp((long) value);
+                return timestampFormat.format(ts);
+            case DATE:
+                Date date = new Date((long) value);
+                return dateFormat.format(date);
             case LONGVARCHAR:
             case LONGNVARCHAR:
                 return new String((byte[]) value);
