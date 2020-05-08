@@ -4,6 +4,7 @@ import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.github.shyiko.mysql.binlog.event.RotateEventData;
+import com.google.common.annotations.VisibleForTesting;
 import org.embulk.input.mysql_binlog.PluginTask;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.manager.TableManager;
@@ -32,7 +33,8 @@ public class PositionHandler implements BinlogEventHandler {
         return Collections.emptyList();
     }
 
-    private boolean isFinish(PluginTask task, String filename, long position){
+    @VisibleForTesting
+    public boolean isFinish(PluginTask task, String filename, long position){
         if (task.getToBinlogFilename().isPresent() && task.getToBinlogPosition().isPresent()){
             if (task.getToBinlogFilename().get().equals(filename) && task.getToBinlogPosition().get() == position){
                 return true;
