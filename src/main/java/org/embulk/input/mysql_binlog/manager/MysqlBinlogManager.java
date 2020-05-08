@@ -3,6 +3,7 @@ package org.embulk.input.mysql_binlog.manager;
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.github.shyiko.mysql.binlog.event.deserialization.ColumnType;
+import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
 import org.embulk.input.mysql_binlog.*;
 import org.embulk.input.mysql_binlog.handler.*;
 import org.embulk.input.mysql_binlog.model.*;
@@ -113,6 +114,11 @@ public class MysqlBinlogManager {
 
     private BinaryLogClient initClient(){
         BinaryLogClient client = new BinaryLogClient(this.dbInfo.getHost(), this.dbInfo.getPort(), this.dbInfo.getUser(), this.dbInfo.getPassword());
+        EventDeserializer eventDeserializer = new EventDeserializer();
+        eventDeserializer.setCompatibilityMode(
+                EventDeserializer.CompatibilityMode.DATE_AND_TIME_AS_LONG
+        );
+        client.setEventDeserializer(eventDeserializer);
         client.setBinlogFilename(this.getBinlogFilename());
         client.setBinlogPosition(this.getBinlogPosition());
         client.registerEventListener(event -> {
