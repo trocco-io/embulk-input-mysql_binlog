@@ -1,9 +1,11 @@
 package org.embulk.input.mysql_binlog.handler;
 
 import com.github.shyiko.mysql.binlog.event.*;
+import org.embulk.input.mysql_binlog.PluginTask;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Spy;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -13,11 +15,15 @@ public class TestPositionHandler {
     private Event rotateEvent;
     private Event insertEvent;
     private MysqlBinlogManager binlogManager;
+    @Spy
     private PositionHandler positionHandler;
+    private PluginTask task;
 
     @Before
     public void prepare(){
         binlogManager = mock(MysqlBinlogManager.class);
+        positionHandler = spy(new PositionHandler(binlogManager));
+        doReturn(false).when(positionHandler).isFinish(any(), anyString(), anyLong());
     }
 
     @Before
@@ -45,7 +51,6 @@ public class TestPositionHandler {
 
     @Test
     public void storeBinlogFilenameAndPosition() {
-        positionHandler = new PositionHandler(binlogManager);
         positionHandler.handle(rotateEvent);
         verify(binlogManager).setBinlogFilename("mysql-bin.000002");
         verify(binlogManager).setBinlogPosition(1234L);
@@ -53,7 +58,6 @@ public class TestPositionHandler {
 
     @Test
     public void storeOnlyPosition(){
-        positionHandler = new PositionHandler(binlogManager);
         positionHandler.handle(insertEvent);
         verify(binlogManager, never()).setBinlogFilename(anyString());
         verify(binlogManager).setBinlogPosition(5678L);

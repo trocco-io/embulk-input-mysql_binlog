@@ -44,7 +44,7 @@ public class TableManager {
         if (tableInfo.containsKey(tableId)){
             return tableInfo.get(tableId);
         }
-        throw new RuntimeException("tableId does not exists");
+        throw new RuntimeException("tableId does not exist");
     }
 
     public void setTableInfo(TableMapEventData eventData){

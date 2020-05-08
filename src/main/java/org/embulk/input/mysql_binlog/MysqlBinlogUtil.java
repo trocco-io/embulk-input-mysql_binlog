@@ -21,7 +21,6 @@ public class MysqlBinlogUtil {
     }
 
     public static class SeqCounterHolder {
-        /** 唯一のインスタンス */
         private static final AtomicLong INSTANCE = new AtomicLong(0);
     }
 }
