@@ -31,11 +31,15 @@ public class UpdateEventHandler implements BinlogEventHandler {
             return Collections.emptyList();
         }
 
+        // Old row needs to delete in case where the primary key is changed.
         // getKey => before
         // getValue => after
-        List<Serializable[]> rawRaw = updateEvent.getRows().stream().map(Map.Entry::getValue).collect(Collectors.toList());
-        List<Row> rows = table.convertRows(rawRaw);
-        this.binlogManager.addRows(rows, false);
+        List<Serializable[]> rawOldRaw = updateEvent.getRows().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+        List<Serializable[]> rawNewRaw = updateEvent.getRows().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+        List<Row> oldRows = table.convertRows(rawOldRaw);
+        List<Row> newRows = table.convertRows(rawNewRaw);
+        this.binlogManager.addRows(oldRows, true);
+        this.binlogManager.addRows(newRows, false);
         return Collections.emptyList();
     }
 }
