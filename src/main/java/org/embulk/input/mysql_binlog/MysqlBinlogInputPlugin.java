@@ -43,8 +43,20 @@ public class MysqlBinlogInputPlugin
 
         // build next config
         ConfigDiff configDiff = Exec.newConfigDiff();
+
+
         configDiff.set("from_binlog_filename", MysqlBinlogPosition.getCurrentBinlogFilename());
         configDiff.set("from_binlog_position", MysqlBinlogPosition.getCurrentBinlogPosition());
+        // from & to are equal nothing changed
+        // TODO: refactor later
+        if (task.getToBinlogFilename().isPresent() && task.getToBinlogPosition().isPresent()){
+            if (task.getFromBinlogFilename().equals(task.getToBinlogFilename().get())
+                    && task.getFromBinlogPosition().equals(task.getToBinlogPosition().get())){
+                configDiff.set("from_binlog_filename", task.getToBinlogFilename().get());
+                configDiff.set("from_binlog_position", task.getToBinlogPosition().get());
+            }
+        }
+
         configDiff.set("to_binlog_filename", null);
         configDiff.set("to_binlog_position", null);
         return configDiff;
