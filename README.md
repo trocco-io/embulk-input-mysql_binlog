@@ -1,4 +1,3 @@
-# CAUTION UNDER DEVELOPMENT
 # Mysql Binlog input plugin for Embulk
 
 **This plugin is under development**.
