@@ -30,7 +30,7 @@ public class Cell {
     // TODO: should be nullable?
     public String getValueWithString(){
         if (value == null) {
-            return "null";
+            return null;
         }
         switch (column.getJdbcType()){
             case BIT:
