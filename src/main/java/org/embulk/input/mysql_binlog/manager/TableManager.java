@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class TableManager {
+public class TableManager
+{
     static {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -25,6 +26,7 @@ public class TableManager {
             System.out.println("jdbc client not found");
         }
     }
+
     private final Logger logger = LoggerFactory.getLogger(TableManager.class);
     private Map<Long, Table> tableInfo;
     private DbInfo dbInfo;
@@ -33,26 +35,29 @@ public class TableManager {
     @Getter
     private String targetTableName;
 
-    public TableManager(DbInfo dbInfo, PluginTask pluginTask){
+    public TableManager(DbInfo dbInfo, PluginTask pluginTask)
+    {
         this.dbInfo = dbInfo;
         this.tableInfo = new HashMap<>();
         this.pluginTask = pluginTask;
         this.targetTableName = pluginTask.getTable();
     }
 
-    public Table getTableInfo(Long tableId) {
-        if (tableInfo.containsKey(tableId)){
+    public Table getTableInfo(Long tableId)
+    {
+        if (tableInfo.containsKey(tableId)) {
             return tableInfo.get(tableId);
         }
         throw new RuntimeException("tableId does not exist");
     }
 
-    public void setTableInfo(TableMapEventData eventData){
+    public void setTableInfo(TableMapEventData eventData)
+    {
         String talbeName = eventData.getTable();
         String dbName = eventData.getDatabase();
-        long tableId =  eventData.getTableId();
+        long tableId = eventData.getTableId();
 
-        if (tableInfo.containsKey(eventData.getTableId())){
+        if (tableInfo.containsKey(eventData.getTableId())) {
             return;
         }
         String url = String.format("jdbc:mysql://%s:%d/%s",
@@ -63,6 +68,8 @@ public class TableManager {
         props.setProperty("password", dbInfo.getPassword());
         props.setProperty("characterEncoding", "UTF-8");
         props.setProperty("autoReconnect", "true");
+        props.setProperty("loginTimeout", pluginTask.getLoginTimeoutSec());
+        props.setProperty("socketTimeout", pluginTask.getSocketTimeoutSec());
 
         switch (pluginTask.getSsl()) {
             case DISABLE:
@@ -86,7 +93,7 @@ public class TableManager {
             Table table = new Table(dbName, talbeName);
 
             List<ColumnType> columnTypes = new ArrayList<>();
-            for (byte columnType: eventData.getColumnTypes()) {
+            for (byte columnType : eventData.getColumnTypes()) {
                 columnTypes.add(ColumnType.byCode(columnType));
             }
             List<Column> columns = new ArrayList<>();
@@ -95,7 +102,7 @@ public class TableManager {
                 String columnName = dbColumns.getString("COLUMN_NAME");
                 // &0xFF unsigned byte to int
                 columns.add(new Column(columnName,
-                        ColumnType.byCode(eventData.getColumnTypes()[i]& 0xFF),
+                        ColumnType.byCode(eventData.getColumnTypes()[i] & 0xFF),
                         JDBCType.valueOf(dbColumns.getInt("DATA_TYPE"))));
                 i++;
 

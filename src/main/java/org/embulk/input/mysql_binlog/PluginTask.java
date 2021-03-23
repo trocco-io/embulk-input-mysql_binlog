@@ -8,7 +8,8 @@ import org.embulk.input.mysql_binlog.model.Ssl;
 import org.embulk.spi.SchemaConfig;
 
 public interface PluginTask
-        extends Task {
+        extends Task
+{
     @Config("host")
     String getHost();
 
@@ -68,4 +69,12 @@ public interface PluginTask
     @Config("default_timezone")
     @ConfigDefault("\"UTC\"")
     String getDefaultTimezone();
+
+    @Config("login_timeout_sec")
+    @ConfigDefault("60")
+    String getLoginTimeoutSec();
+
+    @Config("socket_timeout_sec")
+    @ConfigDefault("600")
+    String getSocketTimeoutSec();
 }
