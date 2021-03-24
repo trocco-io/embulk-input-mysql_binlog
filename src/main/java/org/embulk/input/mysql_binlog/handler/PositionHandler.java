@@ -7,10 +7,11 @@ import com.github.shyiko.mysql.binlog.event.RotateEventData;
 import com.google.common.annotations.VisibleForTesting;
 import org.embulk.input.mysql_binlog.PluginTask;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
-import org.embulk.input.mysql_binlog.manager.TableManager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PositionHandler implements BinlogEventHandler {
     private final MysqlBinlogManager binlogManager;
@@ -28,7 +29,19 @@ public class PositionHandler implements BinlogEventHandler {
         this.binlogManager.setBinlogPosition(header.getNextPosition());
 
         if (isFinish(this.binlogManager.getTask(), this.binlogManager.getBinlogFilename(), this.binlogManager.getBinlogPosition())){
-            this.binlogManager.disconnect();
+            // Create new thread to prevent deadlock during disconnecting
+            // ref: shyiko/mysql-binlog-connector-java#230
+            this.binlogManager.setIsConnecting(false);
+            MysqlBinlogManager manager = this.binlogManager;
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    manager.disconnect();
+                }
+            });
+
+
         }
         return Collections.emptyList();
     }

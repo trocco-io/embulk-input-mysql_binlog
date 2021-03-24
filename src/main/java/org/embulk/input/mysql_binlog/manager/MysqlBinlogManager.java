@@ -13,6 +13,9 @@ import org.embulk.spi.Schema;
 import java.io.IOException;
 import java.sql.JDBCType;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 
 public class MysqlBinlogManager {
     private final MysqlBinlogParser parser = new MysqlBinlogParser();
@@ -25,6 +28,8 @@ public class MysqlBinlogManager {
     private Column deleteFlagColumn;
     private Column fetchedAtColumn;
     private Column seqColumn;
+    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private boolean isConnecting = true;
 
     public MysqlBinlogManager(PluginTask task, PageBuilder pageBuilder, Schema schema){
         this.task = task;
@@ -40,6 +45,20 @@ public class MysqlBinlogManager {
         this.setBinlogPosition(task.getFromBinlogPosition());
         this.client = this.initClient();
     }
+
+    public void setIsConnecting(boolean isConnecting){
+        readWriteLock.writeLock().lock();
+        this.isConnecting = isConnecting;
+        readWriteLock.writeLock().unlock();
+    }
+
+    public boolean getIsConnecting(){
+        readWriteLock.readLock().lock();
+        readWriteLock.readLock().unlock();
+        return isConnecting;
+    }
+
+
     public void addRows(List<Row> rows, boolean deleteFlag){
         for (Row row: rows) {
             List<Cell> cells = row.getCells();
@@ -122,10 +141,11 @@ public class MysqlBinlogManager {
         client.setBinlogFilename(this.getBinlogFilename());
         client.setBinlogPosition(this.getBinlogPosition());
         client.registerEventListener(event -> {
-            // TODO: add filter
-
-            // TODO: pass client and handle binlog position and disconnect
-            parser.handle(event);
+            if (getIsConnecting()){
+                // TODO: add filter
+                // TODO: pass client and handle binlog position and disconnect
+                parser.handle(event);
+            }
         });
         return client;
     }
