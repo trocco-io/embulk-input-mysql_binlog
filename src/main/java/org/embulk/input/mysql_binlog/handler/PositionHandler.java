@@ -30,6 +30,7 @@ public class PositionHandler implements BinlogEventHandler {
 
         if (isFinish(this.binlogManager.getTask(), this.binlogManager.getBinlogFilename(), this.binlogManager.getBinlogPosition())){
             // Create new thread to prevent deadlock during disconnecting
+            // ref: shyiko/mysql-binlog-connector-java#230
             this.binlogManager.setIsConnecting(false);
             MysqlBinlogManager manager = this.binlogManager;
             ExecutorService executor = Executors.newSingleThreadExecutor();
