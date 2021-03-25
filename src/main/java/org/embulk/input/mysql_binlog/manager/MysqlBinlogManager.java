@@ -137,6 +137,7 @@ public class MysqlBinlogManager {
         client.setBinlogFilename(this.getBinlogFilename());
         client.setBinlogPosition(this.getBinlogPosition());
         client.registerEventListener(event -> {
+            System.out.println(event);
             if (getIsConnecting()){
                 // TODO: add filter
                 // TODO: pass client and handle binlog position and disconnect
