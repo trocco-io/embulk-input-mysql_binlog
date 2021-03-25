@@ -48,6 +48,7 @@ public class TableManager {
     }
 
     public void setTableInfo(TableMapEventData eventData){
+        System.out.println("setTableInfo 1");
         String talbeName = eventData.getTable();
         String dbName = eventData.getDatabase();
         long tableId =  eventData.getTableId();
@@ -63,6 +64,7 @@ public class TableManager {
         props.setProperty("password", dbInfo.getPassword());
         props.setProperty("characterEncoding", "UTF-8");
         props.setProperty("autoReconnect", "true");
+        System.out.println("setTableInfo 2");
 
         switch (pluginTask.getSsl()) {
             case DISABLE:
@@ -79,20 +81,28 @@ public class TableManager {
                 props.setProperty("verifyServerCertificate", "true");
                 break;
         }
+        System.out.println("setTableInfo 3");
 
         try (Connection con = DriverManager.getConnection(url, props)) {
+            System.out.println("setTableInfo 4");
             DatabaseMetaData metaData = con.getMetaData();
+            System.out.println("setTableInfo 5");
             ResultSet dbColumns = metaData.getColumns(dbName, null, talbeName, null);
+            System.out.println("setTableInfo 6");
             Table table = new Table(dbName, talbeName);
+            System.out.println("setTableInfo 7");
 
             List<ColumnType> columnTypes = new ArrayList<>();
             for (byte columnType: eventData.getColumnTypes()) {
                 columnTypes.add(ColumnType.byCode(columnType));
             }
+            System.out.println("setTableInfo 8");
             List<Column> columns = new ArrayList<>();
             int i = 0;
             while (dbColumns.next()) {
+
                 String columnName = dbColumns.getString("COLUMN_NAME");
+                System.out.println(columnName);
                 // &0xFF unsigned byte to int
                 columns.add(new Column(columnName,
                         ColumnType.byCode(eventData.getColumnTypes()[i]& 0xFF),
@@ -100,8 +110,11 @@ public class TableManager {
                 i++;
 
             }
+            System.out.println("setTableInfo 9");
             table.setColumns(columns);
+            System.out.println("setTableInfo 10");
             tableInfo.put(tableId, table);
+            System.out.println("setTableInfo 11");
         } catch (Exception e) {
             throw new RuntimeException(e);
 

@@ -18,8 +18,13 @@ public class TableMapEventHandler implements BinlogEventHandler {
 
     @Override
     public List<String> handle(Event event) {
+        System.out.println("tableMapEventhandler Start");
         TableMapEventData eventData = event.getData();
+        System.out.println("event.getData() END");
+        System.out.println("setTableInfo Start");
         tableManager.setTableInfo(eventData);
+        System.out.println("setTableInfo END");
+        System.out.println("tableMapEventhandler END");
         return Collections.emptyList();
     }
 }
