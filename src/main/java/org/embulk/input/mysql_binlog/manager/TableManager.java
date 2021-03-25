@@ -63,7 +63,6 @@ public class TableManager {
         props.setProperty("user", dbInfo.getUser());
         props.setProperty("password", dbInfo.getPassword());
         props.setProperty("characterEncoding", "UTF-8");
-        props.setProperty("autoReconnect", "true");
         System.out.println("setTableInfo 2");
 
         switch (pluginTask.getSsl()) {
@@ -83,7 +82,9 @@ public class TableManager {
         }
         System.out.println("setTableInfo 3");
 
-        try (Connection con = DriverManager.getConnection(url, props)) {
+        Connection con = null;
+        try {
+            con = DriverManager.getConnection(url, props);
             System.out.println("setTableInfo 4");
             DatabaseMetaData metaData = con.getMetaData();
             System.out.println("setTableInfo 5");
@@ -115,9 +116,9 @@ public class TableManager {
             System.out.println("setTableInfo 10");
             tableInfo.put(tableId, table);
             System.out.println("setTableInfo 11");
+            con.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
-
         }
     }
 }
