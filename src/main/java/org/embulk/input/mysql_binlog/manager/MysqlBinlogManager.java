@@ -47,14 +47,10 @@ public class MysqlBinlogManager {
     }
 
     public void setIsConnecting(boolean isConnecting){
-        readWriteLock.writeLock().lock();
         this.isConnecting = isConnecting;
-        readWriteLock.writeLock().unlock();
     }
 
     public boolean getIsConnecting(){
-        readWriteLock.readLock().lock();
-        readWriteLock.readLock().unlock();
         return isConnecting;
     }
 
