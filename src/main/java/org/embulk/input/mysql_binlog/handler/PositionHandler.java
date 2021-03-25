@@ -21,14 +21,18 @@ public class PositionHandler implements BinlogEventHandler {
     }
 
     public List<String> handle(Event event){
+        System.out.println("PositionHandler start");
         EventHeaderV4 header = event.getHeader();
         if (header.getEventType() == EventType.ROTATE){
             RotateEventData rotateEvent = event.getData();
             this.binlogManager.setBinlogFilename(rotateEvent.getBinlogFilename());
         }
+        System.out.println("PositionHandler 1");
         this.binlogManager.setBinlogPosition(header.getNextPosition());
+        System.out.println("PositionHandler 2");
 
         if (isFinish(this.binlogManager.getTask(), this.binlogManager.getBinlogFilename(), this.binlogManager.getBinlogPosition())){
+            System.out.println("PositionHandler 3");
             // Create new thread to prevent deadlock during disconnecting
             // ref: shyiko/mysql-binlog-connector-java#230
             this.binlogManager.setIsConnecting(false);
@@ -44,15 +48,20 @@ public class PositionHandler implements BinlogEventHandler {
 
 
         }
+        System.out.println("PositionHandler end");
         return Collections.emptyList();
     }
 
     @VisibleForTesting
     public boolean isFinish(PluginTask task, String filename, long position){
+        System.out.println("PositionHandler isFinish");
         if (task.getToBinlogFilename().isPresent() && task.getToBinlogPosition().isPresent()){
+            System.out.println("PositionHandler isFinish 1");
             if (task.getToBinlogFilename().get().equals(filename) && task.getToBinlogPosition().get() == position){
+                System.out.println("PositionHandler isFinish 2");
                 return true;
             }else if(task.getToBinlogFilename().isPresent() && !task.getToBinlogPosition().isPresent()){
+                System.out.println("PositionHandler isFinish 3");
                 return task.getToBinlogFilename().get().equals(filename);
             }
         }
