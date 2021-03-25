@@ -143,6 +143,7 @@ public class MysqlBinlogManager {
                 // TODO: pass client and handle binlog position and disconnect
                 parser.handle(event);
             }
+            System.out.println("handler is finished");
         });
         return client;
     }
