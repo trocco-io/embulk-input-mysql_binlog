@@ -68,7 +68,6 @@ public class TableManager
         props.setProperty("password", dbInfo.getPassword());
         props.setProperty("characterEncoding", "UTF-8");
         props.setProperty("autoReconnect", "true");
-        props.setProperty("loginTimeout", pluginTask.getLoginTimeoutSec());
         props.setProperty("socketTimeout", pluginTask.getSocketTimeoutSec());
 
         switch (pluginTask.getSsl()) {

@@ -70,11 +70,7 @@ public interface PluginTask
     @ConfigDefault("\"UTC\"")
     String getDefaultTimezone();
 
-    @Config("login_timeout_sec")
-    @ConfigDefault("60")
-    String getLoginTimeoutSec();
-
     @Config("socket_timeout_sec")
-    @ConfigDefault("600")
+    @ConfigDefault("1800")
     String getSocketTimeoutSec();
 }
