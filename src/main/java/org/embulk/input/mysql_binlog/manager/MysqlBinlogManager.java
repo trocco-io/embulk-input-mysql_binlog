@@ -47,11 +47,6 @@ public class MysqlBinlogManager {
         this.client.setConnecting(isConnecting);
     }
 
-    public boolean getIsConnecting(){
-        return this.client.getConnecting();
-    }
-
-
     public void addRows(List<Row> rows, boolean deleteFlag){
         this.embulkPage.addRecords(rows, deleteFlag);
     }
