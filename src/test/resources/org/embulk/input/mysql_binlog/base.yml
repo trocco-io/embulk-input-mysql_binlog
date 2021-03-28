@@ -12,3 +12,4 @@ metadata_prefix: _trocco_
 columns:
   - {name: id, type: long}
   - {name: name, type: string}
+ddl: create table foo(id bigint);
