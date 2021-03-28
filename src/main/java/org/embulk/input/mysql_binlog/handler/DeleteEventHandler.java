@@ -25,7 +25,7 @@ public class DeleteEventHandler implements BinlogEventHandler {
         Table table = tableManager.getTableInfo(deleteEvent.getTableId());
 
         if (!BinlogEventHandlerHelper.shouldHandle(table,
-                tableManager.getTable(), tableManager.getDatabase())){
+                tableManager.getTableName(), tableManager.getDatabaseName())){
             return Collections.emptyList();
         }
 

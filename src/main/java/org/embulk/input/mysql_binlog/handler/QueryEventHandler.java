@@ -28,18 +28,18 @@ public class QueryEventHandler implements BinlogEventHandler {
     public List<String> handle(Event event){
         QueryEventData queryEvent = event.getData();
         String query = queryEvent.getSql();
-        if (!tableManager.getDatabase().equals(queryEvent.getDatabase())){
+        if (!tableManager.getDatabaseName().equals(queryEvent.getDatabase())){
             return Collections.emptyList();
         }
-        if (!shouldProcessQuery(query, tableManager.getTable())){
+        if (!shouldProcessQuery(query, tableManager.getTableName())){
             return Collections.emptyList();
         }
 
         logger.info("schema migrate");
         logger.info(query);
-        logger.debug(normalizeQuery(query, tableManager.getDatabase(), tableManager.getTable()));
-        this.tableManager.migrate(normalizeQuery(query, tableManager.getDatabase(), tableManager.getTable()));
-        Table table = new Table(tableManager.getDatabase(), tableManager.getDatabaseSchema(), tableManager.getTable());
+        logger.debug(normalizeQuery(query, tableManager.getDatabaseName(), tableManager.getTableName()));
+        this.tableManager.migrate(normalizeQuery(query, tableManager.getDatabaseName(), tableManager.getTableName()));
+        Table table = new Table(tableManager.getDatabaseName(), tableManager.getDatabaseSchema(), tableManager.getTableName());
         MysqlBinlogPosition.setCurrentDdl(table.toDdl());
 
         return Collections.emptyList();

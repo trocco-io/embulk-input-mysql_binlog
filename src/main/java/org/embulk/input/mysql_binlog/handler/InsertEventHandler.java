@@ -26,7 +26,7 @@ public class InsertEventHandler implements BinlogEventHandler {
         Table table = tableManager.getTableInfo(writeEvent.getTableId());
 
         if (!BinlogEventHandlerHelper.shouldHandle(table,
-                tableManager.getTable(), tableManager.getDatabase())){
+                tableManager.getTableName(), tableManager.getDatabaseName())){
             return Collections.emptyList();
         }
 

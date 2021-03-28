@@ -28,13 +28,11 @@ public class TableManager {
         this.databaseSchema = new DatabaseSchema();
     }
 
-    // databasename
-    public String getDatabase(){
+    public String getDatabaseName(){
         return pluginTask.getDatabase();
     }
 
-    // shold get table name
-    public String getTable(){
+    public String getTableName(){
         return pluginTask.getTable();
     }
 
@@ -45,20 +43,9 @@ public class TableManager {
         return null;
     }
 
-     public Table getTableInfoByName(String tableName){
-         for (Map.Entry<Long, Table> tableEntry : tableInfo.entrySet()) {
-             Table table = tableEntry.getValue();
-             if (table.getTableName().equals(tableName)) {
-                 return table;
-             }
-         }
-         return null;
-     }
-
     public void migrate(String sql){
         this.databaseSchema.migrate(sql);
     }
-
 
     public void setTableInfo(TableMapEventData eventData){
         String tableName = eventData.getTable();

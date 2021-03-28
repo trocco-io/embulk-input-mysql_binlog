@@ -28,7 +28,7 @@ public class UpdateEventHandler implements BinlogEventHandler {
         Table table = tableManager.getTableInfo(updateEvent.getTableId());
 
         if (!BinlogEventHandlerHelper.shouldHandle(table,
-                tableManager.getTable(), tableManager.getDatabase())){
+                tableManager.getTableName(), tableManager.getDatabaseName())){
             return Collections.emptyList();
         }
 

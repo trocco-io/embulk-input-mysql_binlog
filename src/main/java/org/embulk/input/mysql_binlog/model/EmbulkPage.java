@@ -8,6 +8,7 @@ import org.embulk.spi.PageBuilder;
 import org.embulk.spi.Schema;
 
 import java.sql.JDBCType;
+import java.util.Collections;
 import java.util.List;
 
 public class EmbulkPage {
@@ -23,9 +24,12 @@ public class EmbulkPage {
         this.pageBuilder = pageBuilder;
         this.schema = schema;
 
-        this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task), JDBCType.BOOLEAN, "BOOLEAN", null);
-        this.fetchedAtColumn = new Column(MysqlBinlogUtil.getFetchedAtName(task), JDBCType.TIMESTAMP, "TIMESTAMP",null);
-        this.seqColumn = new Column(MysqlBinlogUtil.getSeqName(task), JDBCType.BIGINT, "BIGINT", null);
+        this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task),
+                JDBCType.BOOLEAN, "BOOLEAN", Collections.emptyList());
+        this.fetchedAtColumn = new Column(MysqlBinlogUtil.getFetchedAtName(task),
+                JDBCType.TIMESTAMP, "TIMESTAMP", Collections.emptyList());
+        this.seqColumn = new Column(MysqlBinlogUtil.getSeqName(task),
+                JDBCType.BIGINT, "BIGINT", Collections.emptyList());
     }
 
     public void addRecords(List<Row> rows, boolean deleteFlag){
@@ -49,7 +53,8 @@ public class EmbulkPage {
 
             Row newRow = new Row(cells);
 
-            this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow), this.pageBuilder, this.task));
+            this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow),
+                    this.pageBuilder, this.task));
             this.pageBuilder.addRecord();
         }
     }

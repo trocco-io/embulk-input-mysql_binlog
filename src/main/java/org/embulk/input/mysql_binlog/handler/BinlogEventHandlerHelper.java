@@ -2,8 +2,6 @@ package org.embulk.input.mysql_binlog.handler;
 
 import org.embulk.input.mysql_binlog.model.Table;
 
-import java.util.Collections;
-
 public class BinlogEventHandlerHelper {
     public static boolean shouldHandle(Table table, String tableName, String databaseName){
         if(table == null){
