@@ -1,7 +1,6 @@
 package org.embulk.input.mysql_binlog.handler;
 
 import com.github.shyiko.mysql.binlog.event.Event;
-import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
 import com.github.shyiko.mysql.binlog.event.WriteRowsEventData;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.manager.TableManager;
@@ -26,10 +25,11 @@ public class InsertEventHandler implements BinlogEventHandler {
         // todo get table name by name
         Table table = tableManager.getTableInfo(writeEvent.getTableId());
 
-        // TODO: this should be handle by binlog manager
-        if (!table.getTableName().equals(tableManager.getTargetTableName())){
+        if (!BinlogEventHandlerHelper.shouldHandle(table,
+                tableManager.getTableName(), tableManager.getDatabaseName())){
             return Collections.emptyList();
         }
+
         List<Row> rows = table.convertRows(writeEvent.getRows());
         this.binlogManager.addRows(rows, false);
         return Collections.emptyList();

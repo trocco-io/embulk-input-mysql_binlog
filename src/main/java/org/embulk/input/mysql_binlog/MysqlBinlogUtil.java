@@ -1,6 +1,5 @@
 package org.embulk.input.mysql_binlog;
 
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class MysqlBinlogUtil {

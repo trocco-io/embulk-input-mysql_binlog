@@ -1,96 +1,62 @@
 package org.embulk.input.mysql_binlog.manager;
 
-import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.EventType;
-import com.github.shyiko.mysql.binlog.event.deserialization.ColumnType;
-import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
+import lombok.Getter;
 import org.embulk.input.mysql_binlog.*;
 import org.embulk.input.mysql_binlog.handler.*;
 import org.embulk.input.mysql_binlog.model.*;
 import org.embulk.spi.PageBuilder;
 import org.embulk.spi.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.sql.JDBCType;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 public class MysqlBinlogManager {
-    private final MysqlBinlogParser parser = new MysqlBinlogParser();
+    private final Logger logger = LoggerFactory.getLogger(MysqlBinlogManager.class);
+    private final MysqlBinlogEventHandler handler = new MysqlBinlogEventHandler();
     private final PluginTask task;
     private final PageBuilder pageBuilder;
-    private final Schema schema;
-    private TableManager tableManager;
-    private DbInfo dbInfo;
-    private BinaryLogClient client;
-    private Column deleteFlagColumn;
-    private Column fetchedAtColumn;
-    private Column seqColumn;
-    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    private boolean isConnecting = true;
+    @Getter
+    private final TableManager tableManager;
+    private final MysqlBinlogClient client;
+    private final EmbulkPage embulkPage;
 
     public MysqlBinlogManager(PluginTask task, PageBuilder pageBuilder, Schema schema){
         this.task = task;
         this.pageBuilder = pageBuilder;
-        this.schema = schema;
-        this.setDbInfo();
-        this.tableManager = new TableManager(this.dbInfo, task);
-        this.registerHandler();
-        this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task), ColumnType.TINY, JDBCType.BOOLEAN);
-        this.fetchedAtColumn = new Column(MysqlBinlogUtil.getFetchedAtName(task), ColumnType.TIMESTAMP_V2, JDBCType.TIMESTAMP);
-        this.seqColumn = new Column(MysqlBinlogUtil.getSeqName(task), ColumnType.LONG, JDBCType.BIGINT);
+
         this.setBinlogFilename(task.getFromBinlogFilename());
         this.setBinlogPosition(task.getFromBinlogPosition());
-        this.client = this.initClient();
+        this.setCurrentDdl(task.getDdl());
+
+        this.embulkPage = new EmbulkPage(task, pageBuilder, schema);
+        this.tableManager = new TableManager(task);
+        // TODO: parse DDL to normalize table name
+        this.tableManager.migrate(task.getDdl());
+
+        DbInfo dbInfo = MysqlBinlogClient.convertTaskToDbInfo(task);
+        this.client = new MysqlBinlogClient(dbInfo, getBinlogFilename(), getBinlogPosition());
+        this.registerHandler();
+        this.client.registerEventListener(handler);
     }
 
     public void setIsConnecting(boolean isConnecting){
-        this.isConnecting = isConnecting;
+        this.client.setConnecting(isConnecting);
     }
-
-    public boolean getIsConnecting(){
-        return isConnecting;
-    }
-
 
     public void addRows(List<Row> rows, boolean deleteFlag){
-        for (Row row: rows) {
-            List<Cell> cells = row.getCells();
-            if (task.getEnableMetadataDeleted()){
-                Cell deleteFlagCell = new Cell(deleteFlag, deleteFlagColumn);
-                cells.add(deleteFlagCell);
-            }
-
-            if (task.getEnableMetadataFetchedAt()){
-                // value is stored in column visitor
-                Cell fetchedAtCell = new Cell(null, fetchedAtColumn);
-                cells.add(fetchedAtCell);
-            }
-
-            if (task.getEnableMetadataSeq()) {
-                Cell seqCell = new Cell(MysqlBinlogUtil.getSeqCounter().incrementAndGet(), seqColumn);
-                cells.add(seqCell);
-            }
-
-            Row newRow = new Row(cells);
-
-            this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow), this.pageBuilder, this.task));
-            this.pageBuilder.addRecord();
-        }
+        this.embulkPage.addRecords(rows, deleteFlag);
     }
 
-    public void addRows(List<Row> rows){
-        for (Row row: rows) {
-            this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(row), this.pageBuilder, this.task));
-            this.pageBuilder.addRecord();
-        }
+    public void flush(){
+        this.embulkPage.flush();
     }
 
     public void connect(){
         try {
-            this.client.setBlocking(false);
             this.client.connect();
         } catch (Exception e){
             // TODO: handle error proper
@@ -123,40 +89,20 @@ public class MysqlBinlogManager {
         return MysqlBinlogPosition.getCurrentBinlogPosition();
     }
 
+    public void setCurrentDdl(String ddl){
+        MysqlBinlogPosition.setCurrentDdl(ddl);
+    }
+
     public PluginTask getTask(){
         return this.task;
     }
 
-    private BinaryLogClient initClient(){
-        BinaryLogClient client = new BinaryLogClient(this.dbInfo.getHost(), this.dbInfo.getPort(), this.dbInfo.getUser(), this.dbInfo.getPassword());
-        EventDeserializer eventDeserializer = new EventDeserializer();
-        eventDeserializer.setCompatibilityMode(
-                EventDeserializer.CompatibilityMode.DATE_AND_TIME_AS_LONG
-        );
-        client.setEventDeserializer(eventDeserializer);
-        client.setBinlogFilename(this.getBinlogFilename());
-        client.setBinlogPosition(this.getBinlogPosition());
-        client.registerEventListener(event -> {
-            System.out.println(event);
-            if (getIsConnecting()){
-                // TODO: add filter
-                // TODO: pass client and handle binlog position and disconnect
-                parser.handle(event);
-            }
-            System.out.println("handler is finished");
-        });
-        return client;
-    }
-
-    private void setDbInfo(){
-        this.dbInfo = new DbInfo(task.getHost(), task.getPort(), task.getDatabase(), task.getUser(), task.getPassword());
-    }
-
     private void registerHandler(){
-        this.parser.registerHandler(new InsertEventHandler(this.tableManager, this), EventType.WRITE_ROWS, EventType.EXT_WRITE_ROWS);
-        this.parser.registerHandler(new UpdateEventHandler(this.tableManager, this), EventType.UPDATE_ROWS, EventType.EXT_UPDATE_ROWS);
-        this.parser.registerHandler(new DeleteEventHandler(this.tableManager, this), EventType.DELETE_ROWS, EventType.EXT_DELETE_ROWS);
-        this.parser.registerHandler(new TableMapEventHandler(this.tableManager), EventType.TABLE_MAP);
-        this.parser.registerPositionHandler(new PositionHandler(this));
+        this.handler.registerHandler(new InsertEventHandler(this.tableManager, this), EventType.WRITE_ROWS, EventType.EXT_WRITE_ROWS);
+        this.handler.registerHandler(new UpdateEventHandler(this.tableManager, this), EventType.UPDATE_ROWS, EventType.EXT_UPDATE_ROWS);
+        this.handler.registerHandler(new DeleteEventHandler(this.tableManager, this), EventType.DELETE_ROWS, EventType.EXT_DELETE_ROWS);
+        this.handler.registerHandler(new TableMapEventHandler(this.tableManager), EventType.TABLE_MAP);
+        this.handler.registerHandler(new QueryEventHandler(this.tableManager), EventType.QUERY);
+        this.handler.registerPositionHandler(new PositionHandler(this));
     }
 }
