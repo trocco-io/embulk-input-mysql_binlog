@@ -1,13 +1,22 @@
 package org.embulk.input.mysql_binlog.model;
 
 /**
- * Store MySQL binlog position
+ * Store MySQL binlog position and ddl
  */
 public class MysqlBinlogPosition {
     private static String currentBinlogFilename;
     private static long currentBinlogPosition;
     private static String toBinlogFilename;
     private static long toBinlogPosition;
+    private static String currentDdl;
+
+    public static String getCurrentDdl() {
+        return currentDdl;
+    }
+
+    public static void setCurrentDdl(String currentDdl) {
+        MysqlBinlogPosition.currentDdl = currentDdl;
+    }
 
     public static String getCurrentBinlogFilename(){
         return currentBinlogFilename;

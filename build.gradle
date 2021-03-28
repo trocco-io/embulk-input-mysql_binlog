@@ -29,6 +29,9 @@ dependencies {
     compileOnly group: 'org.projectlombok', name: 'lombok', version:'1.18.10'
     provided group: 'org.projectlombok', name: 'lombok', version:'1.18.10'
 
+    compile group: 'io.debezium', name: 'debezium-connector-mysql', version: '1.4.2.Final'
+    compile group: 'io.debezium', name: 'debezium-core', version: '1.4.2.Final'
+
     // implementation group: 'org.projectlombok', name: 'lombok', version:'1.18.10'
     // compile "YOUR_JAR_DEPENDENCY_GROUP:YOUR_JAR_DEPENDENCY_MODULE:YOUR_JAR_DEPENDENCY_VERSION"
     testCompile "junit:junit:4.+"

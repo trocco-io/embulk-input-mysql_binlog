@@ -1,7 +1,6 @@
 package org.embulk.input.mysql_binlog.handler;
 
 import com.github.shyiko.mysql.binlog.event.Event;
-import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
 import com.github.shyiko.mysql.binlog.event.UpdateRowsEventData;
 import org.embulk.input.mysql_binlog.manager.MysqlBinlogManager;
 import org.embulk.input.mysql_binlog.manager.TableManager;
@@ -27,7 +26,9 @@ public class UpdateEventHandler implements BinlogEventHandler {
     public List<String> handle(Event event) {
         UpdateRowsEventData updateEvent = event.getData();
         Table table = tableManager.getTableInfo(updateEvent.getTableId());
-        if (!table.getTableName().equals(tableManager.getTargetTableName())){
+
+        if (!BinlogEventHandlerHelper.shouldHandle(table,
+                tableManager.getTable(), tableManager.getDatabase())){
             return Collections.emptyList();
         }
 

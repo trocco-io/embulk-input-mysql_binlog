@@ -68,4 +68,7 @@ public interface PluginTask
     @Config("default_timezone")
     @ConfigDefault("\"UTC\"")
     String getDefaultTimezone();
+
+    @Config("ddl")
+    String getDdl();
 }

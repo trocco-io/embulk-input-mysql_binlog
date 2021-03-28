@@ -24,6 +24,9 @@ public class MysqlBinlogInputPlugin
     public ConfigDiff transaction(ConfigSource config,
             InputPlugin.Control control)
     {
+
+
+
         PluginTask task = config.loadConfig(PluginTask.class);
 
         Schema schema = buildSchema(task);
@@ -59,6 +62,7 @@ public class MysqlBinlogInputPlugin
 
         configDiff.set("to_binlog_filename", null);
         configDiff.set("to_binlog_position", null);
+        configDiff.set("ddl", MysqlBinlogPosition.getCurrentDdl());
         return configDiff;
     }
 

@@ -1,6 +1,7 @@
 package org.embulk.input.mysql_binlog.model;
 
 
+import com.github.shyiko.mysql.binlog.event.deserialization.json.JsonBinary;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,8 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+
+import static java.sql.Types.*;
 
 
 @Data
@@ -32,6 +35,22 @@ public class Cell {
         if (value == null) {
             return null;
         }
+
+        if (column.getTypeName().equals("JSON")){
+            try {
+                return JsonBinary.parseAsString((byte[]) value);
+            }catch (Exception e){
+                return "";
+            }
+        }else if(column.getTypeName().equals("TINYTEXT")){
+            return new String((byte[]) value);
+        }else if(column.getTypeName().equals("ENUM")){
+            int idx = Integer.parseInt(String.valueOf(value));
+            String val = column.getEnumValues().get(idx-1);
+            return val.substring(1, val.length()-1);
+        }
+
+
         switch (column.getJdbcType()){
             case BIT:
             case BOOLEAN:
@@ -44,8 +63,8 @@ public class Cell {
             case DOUBLE:
             case NUMERIC:
             case DECIMAL:
-            case CHAR:
             case VARCHAR:
+            case CHAR:
                 return String.valueOf(value);
             case TIME:
                 Timestamp time = new Timestamp((long) value);
