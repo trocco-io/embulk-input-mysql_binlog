@@ -72,7 +72,6 @@ public class MysqlBinlogColumnVisitor implements ColumnVisitor {
             String data = accessor.get(column.getName());
 
             pageBuilder.setDouble(column, Double.parseDouble(data));
-            pageBuilder.setDouble(column, Float.parseFloat(data));
         } catch (Exception e) {
             pageBuilder.setNull(column);
         }
