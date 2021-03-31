@@ -18,6 +18,6 @@ public class MysqlBinlogAccessor {
                 return cell.getValueWithString();
             }
         }
-        return "";
+        return null;
     }
 }
