@@ -65,7 +65,7 @@ public class Table {
         sb.append(column.typeName());
 
         //e.g. enum_col ENUM ('foo', 'bar')
-        if (column.typeName().equals("ENUM")){
+        if (column.typeName().equals("ENUM") || column.typeName().equals("SET")){
             sb.append("(");
             String enumVals = column.enumValues().stream()
                     .map(v->v.substring(1, v.length()-1))
