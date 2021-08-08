@@ -10,7 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 
 
 @Data
@@ -19,6 +23,7 @@ public class Cell {
     private Object value;
     private Column column;
     private final Logger logger = LoggerFactory.getLogger(MysqlBinlogClient.class);
+    private final String datetimeTimezoneConvertFormat = "yyyy-MM-dd HH:mm:ss.SSS";
 
     private SimpleDateFormat timeFormat =  new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
@@ -35,7 +40,17 @@ public class Cell {
             return null;
         }
 
-        switch (column.getTypeName()) {
+        // BIGINT UNSIGNED
+        // => BIGINT
+        int spaceIdx = column.getTypeName().indexOf(' ');
+        String type;
+        if (spaceIdx == -1){
+            type = column.getTypeName();
+        }else{
+            type = column.getTypeName().substring(0, spaceIdx);
+        }
+
+        switch (type) {
             case "BIT":
             case "BOOLEAN":
             case "INT":
@@ -104,6 +119,30 @@ public class Cell {
                 }
                 return sb.toString();
             case "DATETIME":
+                // datetime does not contain timezone info
+                //
+                // true value from user perspective
+                // 2021-08-04 18:29:53.000 +09:00
+                // but binlog gives below
+                // 2021-08-05 03:29:53.000 +09:00
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli((long) value),ZoneId.of(column.getTask().getDefaultTimezone()));
+
+                // convert time to localtime in UTC; need to remove timezone info
+                // 2021-08-04 18:29:53.000 +00:00
+                // remove timezone info and set user defined timezone forcefully
+                // value is converted to 2021-08-04 18:29:53.000 +09:00
+                SimpleDateFormat sdf = new SimpleDateFormat(datetimeTimezoneConvertFormat);
+                ZoneId zid = ZoneId.of(column.getTask().getDefaultTimezone());
+                sdf.setTimeZone(TimeZone.getTimeZone(zid));
+
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern(datetimeTimezoneConvertFormat);
+                ZonedDateTime utc = zdt.withZoneSameInstant(ZoneId.of("UTC"));
+                try{
+                    java.util.Date d = sdf.parse(utc.format(dtf));
+                    return timestampFormat.format(d);
+                }catch (ParseException e){
+                    throw new RuntimeException("could not parse datetime " + this);
+                }
             case "TIMESTAMP":
                 Timestamp ts = new Timestamp((long) value);
                 return timestampFormat.format(ts);

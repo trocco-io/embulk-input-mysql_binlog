@@ -2,6 +2,7 @@ package org.embulk.input.mysql_binlog.model;
 
 import lombok.Data;
 import lombok.Setter;
+import org.embulk.input.mysql_binlog.PluginTask;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,11 +15,13 @@ public class Table {
     @Setter
     private DatabaseSchema databaseSchema;
     private String tableName;
+    private PluginTask task;
 
-    public Table(String dbName, DatabaseSchema databaseSchema, String tableName){
+    public Table(String dbName, DatabaseSchema databaseSchema, String tableName, PluginTask task){
         this.databaseName = dbName;
         this.databaseSchema = databaseSchema;
         this.tableName = tableName;
+        this.task = task;
     }
 
 
@@ -37,12 +40,11 @@ public class Table {
         List<Cell> cells = new ArrayList<>();
         io.debezium.relational.Table table = this.databaseSchema.getTable(tableName);
         List<io.debezium.relational.Column> columns = table.columns();
-        Row row = new Row(cells);
         for (int i = 0; i < rawRow.length; i++){
             io.debezium.relational.Column column = columns.get(i);
-            cells.add(new Cell(rawRow[i], new Column(column)));
+            cells.add(new Cell(rawRow[i], new Column(column, task)));
         }
-        return row;
+        return new Row(cells);
     }
 
     public String toDdl(){
