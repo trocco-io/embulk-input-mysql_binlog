@@ -25,11 +25,11 @@ public class EmbulkPage {
         this.schema = schema;
 
         this.deleteFlagColumn = new Column(MysqlBinlogUtil.getDeleteFlagName(task),
-                JDBCType.BOOLEAN, "BOOLEAN", Collections.emptyList());
+                JDBCType.BOOLEAN, "BOOLEAN", Collections.emptyList(), task);
         this.fetchedAtColumn = new Column(MysqlBinlogUtil.getFetchedAtName(task),
-                JDBCType.TIMESTAMP, "TIMESTAMP", Collections.emptyList());
+                JDBCType.TIMESTAMP, "TIMESTAMP", Collections.emptyList(), task);
         this.seqColumn = new Column(MysqlBinlogUtil.getSeqName(task),
-                JDBCType.BIGINT, "BIGINT", Collections.emptyList());
+                JDBCType.BIGINT, "BIGINT", Collections.emptyList(), task);
     }
 
     public void addRecords(List<Row> rows, boolean deleteFlag){

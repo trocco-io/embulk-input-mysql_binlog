@@ -44,7 +44,7 @@ public class QueryEventHandler implements BinlogEventHandler {
         logger.info(query);
         logger.debug(normalizeQuery(query, tableManager.getDatabaseName(), tableManager.getTableName()));
         this.tableManager.migrate(normalizeQuery(query, tableManager.getDatabaseName(), tableManager.getTableName()));
-        Table table = new Table(tableManager.getDatabaseName(), tableManager.getDatabaseSchema(), tableManager.getTableName());
+        Table table = new Table(tableManager.getDatabaseName(), tableManager.getDatabaseSchema(), tableManager.getTableName(), tableManager.getPluginTask());
         MysqlBinlogPosition.setCurrentDdl(table.toDdl());
 
         return Collections.emptyList();

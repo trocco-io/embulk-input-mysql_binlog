@@ -48,7 +48,11 @@ public class TableManager {
         String tableName = eventData.getTable();
         String dbName = eventData.getDatabase();
         long tableId =  eventData.getTableId();
-        Table table = new Table(dbName, databaseSchema, tableName);
+        Table table = new Table(dbName, databaseSchema, tableName, pluginTask);
         tableInfo.put(tableId, table);
+    }
+
+    public PluginTask getPluginTask() {
+        return pluginTask;
     }
 }
