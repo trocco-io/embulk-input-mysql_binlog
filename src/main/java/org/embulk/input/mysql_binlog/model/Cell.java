@@ -119,6 +119,7 @@ public class Cell {
                 }
                 return sb.toString();
             case "DATETIME":
+                // FIXME: simplify this logic
                 // datetime does not contain timezone info
                 //
                 // true value from user perspective
