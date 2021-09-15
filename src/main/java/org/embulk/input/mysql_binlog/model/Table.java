@@ -62,9 +62,9 @@ public class Table {
 
     private String ddlLine(io.debezium.relational.Column column){
         StringBuilder sb = new StringBuilder();
-        sb.append(this.task.getEscapeCharacter());
-        sb.append(column.name());
-        sb.append(this.task.getEscapeCharacter());
+        sb.append("`");
+        sb.append(column.name().replaceAll("`", "``"));
+        sb.append("`");
         sb.append(" ");
         sb.append(column.typeName());
 
