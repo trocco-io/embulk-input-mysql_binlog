@@ -30,12 +30,14 @@ public class MysqlBinlogManager {
 
         this.setBinlogFilename(task.getFromBinlogFilename());
         this.setBinlogPosition(task.getFromBinlogPosition());
-        this.setCurrentDdl(task.getDdl());
 
         this.embulkPage = new EmbulkPage(task, pageBuilder, schema);
         this.tableManager = new TableManager(task);
         // TODO: parse DDL to normalize table name
         this.tableManager.migrate(task.getDdl());
+
+        Table t = new Table(task.getDatabase(), this.tableManager.getDatabaseSchema(), task.getTable(), task);
+        this.setCurrentDdl(t.toDdl());
 
         DbInfo dbInfo = MysqlBinlogClient.convertTaskToDbInfo(task);
         this.client = new MysqlBinlogClient(dbInfo, getBinlogFilename(), getBinlogPosition());
