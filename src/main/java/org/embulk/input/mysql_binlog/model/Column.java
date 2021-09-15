@@ -26,7 +26,7 @@ public class Column {
     }
 
     public Column(io.debezium.relational.Column column, PluginTask task){
-        this(column.name(), JDBCType.valueOf(column.jdbcType()), column.typeName(), column.enumValues(), task);
+        this(column.name().replaceAll("``", "`"), JDBCType.valueOf(column.jdbcType()), column.typeName(), column.enumValues(), task);
     }
 
     public PluginTask getTask() {
