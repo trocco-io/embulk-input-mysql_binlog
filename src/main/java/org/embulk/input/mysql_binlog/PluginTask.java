@@ -71,8 +71,4 @@ public interface PluginTask
 
     @Config("ddl")
     String getDdl();
-
-    @Config("escape_character")
-    @ConfigDefault("\"`\"")
-    String getEscapeCharacter();
 }
