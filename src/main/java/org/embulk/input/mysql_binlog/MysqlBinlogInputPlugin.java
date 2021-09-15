@@ -85,8 +85,7 @@ public class MysqlBinlogInputPlugin
                 this.binlogManager.connect();
             }
         } catch (Exception e) {
-            // TODO: handle error
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
         return Exec.newTaskReport();
     }
