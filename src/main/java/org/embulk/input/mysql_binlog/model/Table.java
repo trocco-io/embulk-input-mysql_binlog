@@ -66,7 +66,17 @@ public class Table {
         sb.append(column.name());
         sb.append("`");
         sb.append(" ");
-        sb.append(column.typeName());
+
+        // BIGINT(20) UNSIGNED
+        // -> BIGINT(20)
+        int spaceIdx = column.typeName().indexOf(' ');
+        String type;
+        if (spaceIdx == -1){
+            type = column.typeName();
+        }else{
+            type = column.typeName().substring(0, spaceIdx);
+        }
+        sb.append(type);
 
         //e.g. enum_col ENUM ('foo', 'bar')
         if (column.typeName().equals("ENUM") || column.typeName().equals("SET")){
