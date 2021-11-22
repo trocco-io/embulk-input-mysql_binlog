@@ -23,17 +23,19 @@ public class PositionHandler implements BinlogEventHandler {
         this.binlogManager = binlogManager;
     }
 
-    public List<String> handle(Event event){
+    public List<String> handle(Event event) {
         EventHeaderV4 header = event.getHeader();
-        if (header.getEventType() == EventType.ROTATE){
+        if (header.getEventType() == EventType.ROTATE) {
             RotateEventData rotateEvent = event.getData();
             this.binlogManager.setBinlogFilename(rotateEvent.getBinlogFilename());
+            logger.info("binlog file: {}", rotateEvent.getBinlogFilename());
             // flush embulk page
             this.binlogManager.flush();
         }
         this.binlogManager.setBinlogPosition(header.getNextPosition());
 
-        if (isFinish(this.binlogManager.getTask(), this.binlogManager.getBinlogFilename(), this.binlogManager.getBinlogPosition())){
+        if (isFinish(this.binlogManager.getTask(), this.binlogManager.getBinlogFilename(),
+                this.binlogManager.getBinlogPosition())) {
             // Create new thread to prevent deadlock during disconnecting
             // ref: shyiko/mysql-binlog-connector-java#230
             this.binlogManager.setIsConnecting(false);
@@ -51,11 +53,11 @@ public class PositionHandler implements BinlogEventHandler {
     }
 
     @VisibleForTesting
-    public boolean isFinish(PluginTask task, String filename, long position){
-        if (task.getToBinlogFilename().isPresent() && task.getToBinlogPosition().isPresent()){
-            if (task.getToBinlogFilename().get().equals(filename) && task.getToBinlogPosition().get() == position){
+    public boolean isFinish(PluginTask task, String filename, long position) {
+        if (task.getToBinlogFilename().isPresent() && task.getToBinlogPosition().isPresent()) {
+            if (task.getToBinlogFilename().get().equals(filename) && task.getToBinlogPosition().get() == position) {
                 return true;
-            }else if(task.getToBinlogFilename().isPresent() && !task.getToBinlogPosition().isPresent()){
+            } else if (task.getToBinlogFilename().isPresent() && !task.getToBinlogPosition().isPresent()) {
                 return task.getToBinlogFilename().get().equals(filename);
             }
         }
