@@ -19,6 +19,9 @@ public class EmbulkPage {
     private final Column deleteFlagColumn;
     private final Column fetchedAtColumn;
     private final Column seqColumn;
+    private final Column databaseColumn;
+    private final Column tableColumn;
+    private final Column dataColumn;
 
     public EmbulkPage(PluginTask task, PageBuilder pageBuilder, Schema schema){
         this.task = task;
@@ -33,28 +36,29 @@ public class EmbulkPage {
                 JDBCType.BIGINT, "BIGINT", Collections.emptyList(), task);
 
         this.dataColumn = new Column("data",
-                JDBCType.STRING, "STRING", Collections.emptyList(), task);
+                JDBCType.VARCHAR, "STRING", Collections.emptyList(), task);
         this.databaseColumn = new Column("database",
-                JDBCType.STRING, "STRING", Collections.emptyList(), task);
+                JDBCType.VARCHAR, "STRING", Collections.emptyList(), task);
         this.tableColumn = new Column("table",
-                JDBCType.STRING, "STRING", Collections.emptyList(), task);
+                JDBCType.VARCHAR, "STRING", Collections.emptyList(), task);
     }
 
     public void addRecords(List<Row> rows, boolean deleteFlag){
         for (Row row: rows) {
+            List<Cell> cells;
             if (this.task.getDataAsJson()){
                 String data = row.toJsonString();
                 Table table = row.getTable();
 
-                Cell databaseCell = new Cell(table.getDatabaseName, databaseColumn);
-                Cell tableCell = new Cell(table.getTableName, tableColumn);
+                Cell databaseCell = new Cell(table.getDatabaseName(), databaseColumn);
+                Cell tableCell = new Cell(table.getTableName(), tableColumn);
                 Cell dataCell = new Cell(data, dataColumn);
-                List<Cell> cells = Arrays.asList(
+                cells = Arrays.asList(
                     databaseCell,
                     tableCell,
                     dataCell);
             }else{
-                List<Cell> cells = row.getCells();
+                cells = row.getCells();
             }
 
             if (task.getEnableMetadataDeleted()){
@@ -73,7 +77,7 @@ public class EmbulkPage {
                 cells.add(seqCell);
             }
 
-            Row newRow = new Row(cells, row.getTalble());
+            Row newRow = new Row(cells, row.getTable());
 
             this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow),
                     this.pageBuilder, this.task));

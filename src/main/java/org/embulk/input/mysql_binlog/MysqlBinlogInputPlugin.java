@@ -96,7 +96,7 @@ public class MysqlBinlogInputPlugin
         ImmutableList.Builder<Column> builder = ImmutableList.builder();
 
         if(task.getDataAsJson()){
-            Column outputColumn = new Column(i++, "data", Tyepes.STRING);
+            Column outputColumn = new Column(i++, "data", Types.STRING);
             builder.add(outputColumn);
         }else{
             for (ColumnConfig column : task.getColumns().getColumns()) {

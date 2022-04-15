@@ -1,5 +1,8 @@
 package org.embulk.input.mysql_binlog.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.util.List;
@@ -13,12 +16,17 @@ public class Row
 
     public String toJsonString(){
         ObjectMapper mapper = new ObjectMapper();
-        ObjectNode root = this.mapper.createObjectNode();
+        ObjectNode root = mapper.createObjectNode();
 
         // TODO: convert all types, json, timestamp etc...
         for(Cell cell : cells){
             root.put(cell.getColumn().getName(), cell.getValueWithString());
         }
-        return mapper.writeValueAsString(root);
+        // TODO: handle correclty
+        try {
+            return mapper.writeValueAsString(root);
+        }catch (JsonProcessingException e){
+            return "";
+        }
     }
 }
