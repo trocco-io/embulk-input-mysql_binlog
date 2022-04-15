@@ -24,9 +24,6 @@ public class MysqlBinlogInputPlugin
     public ConfigDiff transaction(ConfigSource config,
             InputPlugin.Control control)
     {
-
-
-
         PluginTask task = config.loadConfig(PluginTask.class);
 
         Schema schema = buildSchema(task);
@@ -97,10 +94,19 @@ public class MysqlBinlogInputPlugin
         // add meta data
         // todo add metadata based on config
         ImmutableList.Builder<Column> builder = ImmutableList.builder();
-        for (ColumnConfig column : task.getColumns().getColumns()) {
-            Column outputColumn = new Column(i++, column.getName(), column.getType());
+
+        if(task.getDataAsJson()){
+            Column outputColumn = new Column(i++, "data", Tyepes.STRING);
             builder.add(outputColumn);
+        }else{
+            for (ColumnConfig column : task.getColumns().getColumns()) {
+                Column outputColumn = new Column(i++, column.getName(), column.getType());
+                builder.add(outputColumn);
+            }
         }
+
+        // add new schema for data
+
         // add meta data schema
         if (task.getEnableMetadataDeleted()){
             Column deleteFlagColumn = new Column(i++, MysqlBinlogUtil.getDeleteFlagName(task), Types.BOOLEAN);

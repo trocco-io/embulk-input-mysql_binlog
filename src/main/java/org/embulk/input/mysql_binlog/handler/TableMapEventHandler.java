@@ -19,13 +19,15 @@ public class TableMapEventHandler implements BinlogEventHandler {
     @Override
     public List<String> handle(Event event) {
         TableMapEventData eventData = event.getData();
-        if (!eventData.getDatabase().equals(tableManager.getDatabaseName())){
-            return Collections.emptyList();
-        }
 
-        if (!eventData.getTable().equals(tableManager.getTableName())){
-            return Collections.emptyList();
-        }
+        // TODO: add if statement dataJson option
+        // if (!eventData.getDatabase().equals(tableManager.getDatabaseName())){
+        //     return Collections.emptyList();
+        // }
+
+        // if (!eventData.getTable().equals(tableManager.getTableName())){
+        //     return Collections.emptyList();
+        // }
 
         tableManager.setTableInfo(eventData);
         return Collections.emptyList();

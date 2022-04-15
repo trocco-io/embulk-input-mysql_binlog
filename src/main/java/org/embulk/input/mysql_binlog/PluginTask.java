@@ -71,4 +71,8 @@ public interface PluginTask
 
     @Config("ddl")
     String getDdl();
+
+    @Config("data_as_json")
+    @ConfigDefault("false")
+    boolean getDataAsJson();
 }

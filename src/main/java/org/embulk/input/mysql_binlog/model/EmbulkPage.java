@@ -10,6 +10,7 @@ import org.embulk.spi.Schema;
 import java.sql.JDBCType;
 import java.util.Collections;
 import java.util.List;
+import java.util.Arrays;
 
 public class EmbulkPage {
     private final PluginTask task;
@@ -30,11 +31,32 @@ public class EmbulkPage {
                 JDBCType.TIMESTAMP, "TIMESTAMP", Collections.emptyList(), task);
         this.seqColumn = new Column(MysqlBinlogUtil.getSeqName(task),
                 JDBCType.BIGINT, "BIGINT", Collections.emptyList(), task);
+
+        this.dataColumn = new Column("data",
+                JDBCType.STRING, "STRING", Collections.emptyList(), task);
+        this.databaseColumn = new Column("database",
+                JDBCType.STRING, "STRING", Collections.emptyList(), task);
+        this.tableColumn = new Column("table",
+                JDBCType.STRING, "STRING", Collections.emptyList(), task);
     }
 
     public void addRecords(List<Row> rows, boolean deleteFlag){
         for (Row row: rows) {
-            List<Cell> cells = row.getCells();
+            if (this.task.getDataAsJson()){
+                String data = row.toJsonString();
+                Table table = row.getTable();
+
+                Cell databaseCell = new Cell(table.getDatabaseName, databaseColumn);
+                Cell tableCell = new Cell(table.getTableName, tableColumn);
+                Cell dataCell = new Cell(data, dataColumn);
+                List<Cell> cells = Arrays.asList(
+                    databaseCell,
+                    tableCell,
+                    dataCell);
+            }else{
+                List<Cell> cells = row.getCells();
+            }
+
             if (task.getEnableMetadataDeleted()){
                 Cell deleteFlagCell = new Cell(deleteFlag, deleteFlagColumn);
                 cells.add(deleteFlagCell);
@@ -51,7 +73,7 @@ public class EmbulkPage {
                 cells.add(seqCell);
             }
 
-            Row newRow = new Row(cells);
+            Row newRow = new Row(cells, row.getTalble());
 
             this.schema.visitColumns(new MysqlBinlogColumnVisitor(new MysqlBinlogAccessor(newRow),
                     this.pageBuilder, this.task));

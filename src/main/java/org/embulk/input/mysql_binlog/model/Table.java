@@ -44,7 +44,7 @@ public class Table {
             io.debezium.relational.Column column = columns.get(i);
             cells.add(new Cell(rawRow[i], new Column(column, task)));
         }
-        return new Row(cells);
+        return new Row(cells, this);
     }
 
     public String toDdl(){
