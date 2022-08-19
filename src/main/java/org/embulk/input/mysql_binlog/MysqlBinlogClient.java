@@ -33,6 +33,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
         client.setBinlogFilename(binlogFilename);
         client.setBinlogPosition(binlogPosition);
         client.setBlocking(false);
+        client.registerLifecycleListener(this);
     }
 
     public void registerEventListener(BinlogEventHandler binlogEventHandler){
