@@ -17,7 +17,7 @@ public class Table {
     private String tableName;
     private PluginTask task;
 
-    public Table(String dbName, DatabaseSchema databaseSchema, String tableName, PluginTask task){
+    public Table(String dbName, DatabaseSchema databaseSchema, String tableName, PluginTask task) {
         this.databaseName = dbName;
         this.databaseSchema = databaseSchema;
         this.tableName = tableName;
@@ -25,10 +25,10 @@ public class Table {
     }
 
 
-    public List<Row> convertRows(List<Serializable[]> rawRows){
+    public List<Row> convertRows(List<Serializable[]> rawRows) {
         List<Row> rows = new ArrayList<>();
 
-        for (Serializable[] rawRow:
+        for (Serializable[] rawRow :
                 rawRows) {
             Row row = convertRow(rawRow);
             rows.add(row);
@@ -36,18 +36,18 @@ public class Table {
         return rows;
     }
 
-    private Row convertRow(Serializable[] rawRow){
+    private Row convertRow(Serializable[] rawRow) {
         List<Cell> cells = new ArrayList<>();
         io.debezium.relational.Table table = this.databaseSchema.getTable(tableName);
         List<io.debezium.relational.Column> columns = table.columns();
-        for (int i = 0; i < rawRow.length; i++){
+        for (int i = 0; i < rawRow.length; i++) {
             io.debezium.relational.Column column = columns.get(i);
             cells.add(new Cell(rawRow[i], new Column(column, task)));
         }
         return new Row(cells);
     }
 
-    public String toDdl(){
+    public String toDdl() {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE ");
         sb.append(tableName);
@@ -60,7 +60,7 @@ public class Table {
         return sb.toString();
     }
 
-    private String ddlLine(io.debezium.relational.Column column){
+    private String ddlLine(io.debezium.relational.Column column) {
         StringBuilder sb = new StringBuilder();
         sb.append("`");
         sb.append(column.name());
@@ -71,25 +71,25 @@ public class Table {
         // -> BIGINT(20)
         int spaceIdx = column.typeName().indexOf(' ');
         String type;
-        if (spaceIdx == -1){
+        if (spaceIdx == -1) {
             type = column.typeName();
-        }else{
+        } else {
             type = column.typeName().substring(0, spaceIdx);
         }
         sb.append(type);
 
         //e.g. enum_col ENUM ('foo', 'bar')
-        if (column.typeName().equals("ENUM") || column.typeName().equals("SET")){
+        if (column.typeName().equals("ENUM") || column.typeName().equals("SET")) {
             sb.append("(");
             String enumVals = column.enumValues().stream()
-                    .map(v->v.substring(1, v.length()-1))
-                    .map(v->String.format("'%s'", v))
+                    .map(v -> v.substring(1, v.length() - 1))
+                    .map(v -> String.format("'%s'", v))
                     .collect(Collectors.joining(","));
             sb.append(enumVals);
             sb.append(")");
-        }else{
+        } else {
             // e.g. varchar(255)
-            if (column.length() > 0){
+            if (column.length() > 0) {
                 sb.append("(");
                 sb.append(column.length());
                 sb.append(")");

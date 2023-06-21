@@ -3,19 +3,19 @@ package org.embulk.input.mysql_binlog;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class MysqlBinlogUtil {
-    public static String getDeleteFlagName(PluginTask task){
+    public static String getDeleteFlagName(PluginTask task) {
         return task.getMetadataPrefix() + "deleted";
     }
 
-    public static String getFetchedAtName(PluginTask task){
+    public static String getFetchedAtName(PluginTask task) {
         return task.getMetadataPrefix() + "fetched_at";
     }
 
-    public static String getSeqName(PluginTask task){
+    public static String getSeqName(PluginTask task) {
         return task.getMetadataPrefix() + "seq";
     }
 
-    public static AtomicLong getSeqCounter(){
+    public static AtomicLong getSeqCounter() {
         return SeqCounterHolder.INSTANCE;
     }
 

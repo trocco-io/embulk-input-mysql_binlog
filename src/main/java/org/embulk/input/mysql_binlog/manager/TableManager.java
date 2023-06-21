@@ -19,35 +19,35 @@ public class TableManager {
     @Getter
     private DatabaseSchema databaseSchema;
 
-    public TableManager(PluginTask pluginTask){
+    public TableManager(PluginTask pluginTask) {
         this.tableInfo = new HashMap<>();
         this.pluginTask = pluginTask;
         this.databaseSchema = new DatabaseSchema();
     }
 
-    public String getDatabaseName(){
+    public String getDatabaseName() {
         return pluginTask.getDatabase();
     }
 
-    public String getTableName(){
+    public String getTableName() {
         return pluginTask.getTable();
     }
 
     public Table getTableInfo(Long tableId) {
-        if (tableInfo.containsKey(tableId)){
+        if (tableInfo.containsKey(tableId)) {
             return tableInfo.get(tableId);
         }
         return null;
     }
 
-    public void migrate(String sql){
+    public void migrate(String sql) {
         this.databaseSchema.migrate(sql);
     }
 
-    public void setTableInfo(TableMapEventData eventData){
+    public void setTableInfo(TableMapEventData eventData) {
         String tableName = eventData.getTable();
         String dbName = eventData.getDatabase();
-        long tableId =  eventData.getTableId();
+        long tableId = eventData.getTableId();
         Table table = new Table(dbName, databaseSchema, tableName, pluginTask);
         tableInfo.put(tableId, table);
     }

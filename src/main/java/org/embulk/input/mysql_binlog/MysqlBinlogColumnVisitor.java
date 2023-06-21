@@ -1,4 +1,5 @@
 package org.embulk.input.mysql_binlog;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -82,9 +83,9 @@ public class MysqlBinlogColumnVisitor implements ColumnVisitor {
         try {
             Timestamp result;
             // meta_fetched_at need microsecond
-            if (column.getName().equals(MysqlBinlogUtil.getFetchedAtName(this.pluginTask))){
+            if (column.getName().equals(MysqlBinlogUtil.getFetchedAtName(this.pluginTask))) {
                 result = Timestamp.ofInstant(Instant.now());
-            }else {
+            } else {
                 List<ColumnConfig> columnConfigs = pluginTask.getColumns().getColumns();
                 String pattern = DEFAULT_TIMESTAMP_PATTERN;
                 for (ColumnConfig config : columnConfigs) {

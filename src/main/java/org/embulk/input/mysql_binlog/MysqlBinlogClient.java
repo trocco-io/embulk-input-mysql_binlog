@@ -23,7 +23,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     }
 
 
-    public MysqlBinlogClient(DbInfo dbInfo, String binlogFilename, long binlogPosition){
+    public MysqlBinlogClient(DbInfo dbInfo, String binlogFilename, long binlogPosition) {
         client = new BinaryLogClient(dbInfo.getHost(), dbInfo.getPort(), dbInfo.getUser(), dbInfo.getPassword());
         EventDeserializer eventDeserializer = new EventDeserializer();
         eventDeserializer.setCompatibilityMode(
@@ -36,10 +36,10 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
         client.registerLifecycleListener(this);
     }
 
-    public void registerEventListener(BinlogEventHandler binlogEventHandler){
+    public void registerEventListener(BinlogEventHandler binlogEventHandler) {
         client.registerEventListener(event -> {
             logger.debug(event.toString());
-            if (isConnecting){
+            if (isConnecting) {
                 // TODO: add filter
                 // TODO: pass client and handle binlog position and disconnect
                 binlogEventHandler.handle(event);
@@ -56,7 +56,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     }
 
 
-    public static DbInfo convertTaskToDbInfo(PluginTask task){
+    public static DbInfo convertTaskToDbInfo(PluginTask task) {
         return new DbInfo(task.getHost(), task.getPort(), task.getDatabase(), task.getUser(), task.getPassword());
     }
 

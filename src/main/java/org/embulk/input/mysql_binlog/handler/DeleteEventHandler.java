@@ -14,7 +14,7 @@ public class DeleteEventHandler implements BinlogEventHandler {
     private final TableManager tableManager;
     private final MysqlBinlogManager binlogManager;
 
-    public DeleteEventHandler(TableManager tableManager, MysqlBinlogManager binlogManager){
+    public DeleteEventHandler(TableManager tableManager, MysqlBinlogManager binlogManager) {
         this.tableManager = tableManager;
         this.binlogManager = binlogManager;
     }
@@ -25,7 +25,7 @@ public class DeleteEventHandler implements BinlogEventHandler {
         Table table = tableManager.getTableInfo(deleteEvent.getTableId());
 
         if (!BinlogEventHandlerHelper.shouldHandle(table,
-                tableManager.getTableName(), tableManager.getDatabaseName())){
+                tableManager.getTableName(), tableManager.getDatabaseName())) {
             return Collections.emptyList();
         }
 

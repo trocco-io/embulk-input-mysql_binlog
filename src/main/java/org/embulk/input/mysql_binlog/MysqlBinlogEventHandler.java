@@ -9,24 +9,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MysqlBinlogEventHandler implements BinlogEventHandler{
-    private Map<EventType, BinlogEventHandler> handlers = new HashMap<>();
+public class MysqlBinlogEventHandler implements BinlogEventHandler {
+    private final Map<EventType, BinlogEventHandler> handlers = new HashMap<>();
     private BinlogEventHandler positionHandler;
 
-    public void registerHandler(BinlogEventHandler handler, EventType... eventTypes){
-        for (EventType eventType: eventTypes){
+    public void registerHandler(BinlogEventHandler handler, EventType... eventTypes) {
+        for (EventType eventType : eventTypes) {
             handlers.put(eventType, handler);
         }
     }
 
 
-    public void registerPositionHandler(BinlogEventHandler positionHandler){
+    public void registerPositionHandler(BinlogEventHandler positionHandler) {
         this.positionHandler = positionHandler;
     }
 
-    public List<String> handle(Event event){
+    public List<String> handle(Event event) {
         BinlogEventHandler handler = handlers.get(event.getHeader().getEventType());
-        if (handler != null){
+        if (handler != null) {
             handler.handle(event);
         }
         positionHandler.handle(event);
