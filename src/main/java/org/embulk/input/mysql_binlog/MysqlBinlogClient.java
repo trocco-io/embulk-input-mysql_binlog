@@ -14,6 +14,8 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     private final BinaryLogClient client;
     private boolean isConnecting = true;
 
+    private boolean isError = false;
+
     public boolean getConnecting() {
         return isConnecting;
     }
@@ -68,15 +70,26 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     @Override
     public void onCommunicationFailure(BinaryLogClient client, Exception ex) {
         logger.warn("communication failure", ex);
+        synchronized (this){
+           isError = true;
+        }
     }
 
     @Override
     public void onEventDeserializationFailure(BinaryLogClient client, Exception ex) {
         logger.warn("event deserialization failure", ex);
+        synchronized (this){
+            isError = true;
+        }
     }
 
     @Override
     public void onDisconnect(BinaryLogClient client) {
         logger.info("disconnect");
+        synchronized (this) {
+            if (isError) {
+                throw new RuntimeException("Error was occurred");
+            }
+        }
     }
 }
