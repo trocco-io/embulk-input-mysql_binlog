@@ -61,8 +61,7 @@ public class MysqlBinlogManager {
         try {
             this.client.connect();
         } catch (Exception e) {
-            // TODO: handle error proper
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
         this.pageBuilder.finish();
     }
