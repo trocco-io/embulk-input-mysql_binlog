@@ -74,10 +74,9 @@ public class MysqlBinlogInputPlugin
                           PageOutput output) {
         PluginTask task = taskSource.loadTask(PluginTask.class);
         try {
-            try (PageBuilder pageBuilder = getPageBuilder(schema, output)) {
-                this.binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
-                this.binlogManager.connect();
-            }
+            PageBuilder pageBuilder = getPageBuilder(schema, output);
+            this.binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
+            this.binlogManager.connect();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
