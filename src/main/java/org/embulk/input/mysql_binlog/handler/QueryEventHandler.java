@@ -84,7 +84,7 @@ public class QueryEventHandler implements BinlogEventHandler {
     }
 
     @VisibleForTesting
-    public static String normalizeQuery(String query, String daabaseName, String tableName){
+    public static String normalizeQuery(String query, String databaseName, String tableName){
         try{
             Statement statement = CCJSqlParserUtil.parse(query);
             if (statement instanceof Alter) {
@@ -103,7 +103,7 @@ public class QueryEventHandler implements BinlogEventHandler {
         }catch (Exception e){
             logger.debug("fail back to regex");
             logger.debug(e.getMessage());
-            return normalizeQueryRegex(query, daabaseName, tableName);
+            return normalizeQueryRegex(query, databaseName, tableName);
         }
     }
 
