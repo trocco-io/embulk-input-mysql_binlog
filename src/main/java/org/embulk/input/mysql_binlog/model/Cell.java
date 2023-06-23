@@ -25,16 +25,16 @@ public class Cell {
     private final Logger logger = LoggerFactory.getLogger(MysqlBinlogClient.class);
     private final String datetimeTimezoneConvertFormat = "yyyy-MM-dd HH:mm:ss.SSS";
 
-    private SimpleDateFormat timeFormat =  new SimpleDateFormat("HH:mm:ss");
-    private SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
-    private SimpleDateFormat timestampFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS XXX");
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS XXX");
 
-    public Cell(Object value, Column column){
+    public Cell(Object value, Column column) {
         this.value = value;
         this.column = column;
     }
 
-    public String getValueWithString(){
+    public String getValueWithString() {
         logger.debug(column.toString());
         if (value == null) {
             return null;
@@ -44,9 +44,9 @@ public class Cell {
         // => BIGINT
         int spaceIdx = column.getTypeName().indexOf(' ');
         String type;
-        if (spaceIdx == -1){
+        if (spaceIdx == -1) {
             type = column.getTypeName();
-        }else{
+        } else {
             type = column.getTypeName().substring(0, spaceIdx);
         }
 
@@ -102,15 +102,13 @@ public class Cell {
                     if (indexes % 2L != 0) {
                         if (first) {
                             first = false;
-                        }
-                        else {
+                        } else {
                             sb.append(',');
                         }
                         if (index < optionLen) {
                             String setVal = column.getEnumValues().get(index);
                             sb.append(setVal, 1, setVal.length() - 1);
-                        }
-                        else {
+                        } else {
                             logger.warn("Found unexpected index '{}' on column {}", index, column);
                         }
                     }
@@ -126,7 +124,7 @@ public class Cell {
                 // 2021-08-04 18:29:53.000 +09:00
                 // but binlog gives below
                 // 2021-08-05 03:29:53.000 +09:00
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli((long) value),ZoneId.of(column.getTask().getDefaultTimezone()));
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli((long) value), ZoneId.of(column.getTask().getDefaultTimezone()));
 
                 // convert time to localtime in UTC; need to remove timezone info
                 // 2021-08-04 18:29:53.000 +00:00
@@ -138,10 +136,10 @@ public class Cell {
 
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern(datetimeTimezoneConvertFormat);
                 ZonedDateTime utc = zdt.withZoneSameInstant(ZoneId.of("UTC"));
-                try{
+                try {
                     java.util.Date d = sdf.parse(utc.format(dtf));
                     return timestampFormat.format(d);
-                }catch (ParseException e){
+                } catch (ParseException e) {
                     throw new RuntimeException("could not parse datetime " + this);
                 }
             case "TIMESTAMP":

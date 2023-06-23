@@ -14,7 +14,7 @@ public class InsertEventHandler implements BinlogEventHandler {
     private final TableManager tableManager;
     private final MysqlBinlogManager binlogManager;
 
-    public InsertEventHandler(TableManager tableManager, MysqlBinlogManager binlogManager){
+    public InsertEventHandler(TableManager tableManager, MysqlBinlogManager binlogManager) {
         this.tableManager = tableManager;
         this.binlogManager = binlogManager;
     }
@@ -26,7 +26,7 @@ public class InsertEventHandler implements BinlogEventHandler {
         Table table = tableManager.getTableInfo(writeEvent.getTableId());
 
         if (!BinlogEventHandlerHelper.shouldHandle(table,
-                tableManager.getTableName(), tableManager.getDatabaseName())){
+                tableManager.getTableName(), tableManager.getDatabaseName())) {
             return Collections.emptyList();
         }
 

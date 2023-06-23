@@ -14,6 +14,8 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     private final BinaryLogClient client;
     private boolean isConnecting = true;
 
+    private boolean isError = false;
+
     public boolean getConnecting() {
         return isConnecting;
     }
@@ -23,7 +25,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     }
 
 
-    public MysqlBinlogClient(DbInfo dbInfo, String binlogFilename, long binlogPosition){
+    public MysqlBinlogClient(DbInfo dbInfo, String binlogFilename, long binlogPosition) {
         client = new BinaryLogClient(dbInfo.getHost(), dbInfo.getPort(), dbInfo.getUser(), dbInfo.getPassword());
         EventDeserializer eventDeserializer = new EventDeserializer();
         eventDeserializer.setCompatibilityMode(
@@ -36,10 +38,10 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
         client.registerLifecycleListener(this);
     }
 
-    public void registerEventListener(BinlogEventHandler binlogEventHandler){
+    public void registerEventListener(BinlogEventHandler binlogEventHandler) {
         client.registerEventListener(event -> {
             logger.debug(event.toString());
-            if (isConnecting){
+            if (isConnecting) {
                 // TODO: add filter
                 // TODO: pass client and handle binlog position and disconnect
                 binlogEventHandler.handle(event);
@@ -56,7 +58,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     }
 
 
-    public static DbInfo convertTaskToDbInfo(PluginTask task){
+    public static DbInfo convertTaskToDbInfo(PluginTask task) {
         return new DbInfo(task.getHost(), task.getPort(), task.getDatabase(), task.getUser(), task.getPassword());
     }
 
@@ -68,15 +70,26 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     @Override
     public void onCommunicationFailure(BinaryLogClient client, Exception ex) {
         logger.warn("communication failure", ex);
+        synchronized (this){
+           isError = true;
+        }
     }
 
     @Override
     public void onEventDeserializationFailure(BinaryLogClient client, Exception ex) {
         logger.warn("event deserialization failure", ex);
+        synchronized (this){
+            isError = true;
+        }
     }
 
     @Override
     public void onDisconnect(BinaryLogClient client) {
         logger.info("disconnect");
+        synchronized (this) {
+            if (isError) {
+                throw new RuntimeException("Error was occurred");
+            }
+        }
     }
 }

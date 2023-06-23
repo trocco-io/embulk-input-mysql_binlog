@@ -5,23 +5,20 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import org.embulk.config.ConfigException;
 
-public enum Ssl
-{
+public enum Ssl {
     ENABLE,
     DISABLE,
     VERIFY;
 
     @JsonValue
     @Override
-    public String toString()
-    {
+    public String toString() {
         return this.name().toLowerCase();
     }
 
     @JsonCreator
-    public static Ssl fromString(String value)
-    {
-        switch(value) {
+    public static Ssl fromString(String value) {
+        switch (value) {
             case "enable":
             case "true":
                 return ENABLE;

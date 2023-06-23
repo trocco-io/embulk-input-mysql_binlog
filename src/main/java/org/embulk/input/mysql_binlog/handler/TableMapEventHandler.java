@@ -10,20 +10,20 @@ import java.util.List;
 
 // update table id and table name mapping
 public class TableMapEventHandler implements BinlogEventHandler {
-    private TableManager tableManager;
+    private final TableManager tableManager;
 
-    public TableMapEventHandler(TableManager tableManager){
+    public TableMapEventHandler(TableManager tableManager) {
         this.tableManager = tableManager;
     }
 
     @Override
     public List<String> handle(Event event) {
         TableMapEventData eventData = event.getData();
-        if (!eventData.getDatabase().equals(tableManager.getDatabaseName())){
+        if (!eventData.getDatabase().equals(tableManager.getDatabaseName())) {
             return Collections.emptyList();
         }
 
-        if (!eventData.getTable().equals(tableManager.getTableName())){
+        if (!eventData.getTable().equals(tableManager.getTableName())) {
             return Collections.emptyList();
         }
 

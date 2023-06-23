@@ -19,14 +19,14 @@ public class TestPositionHandler {
     private PluginTask task;
 
     @Before
-    public void prepare(){
+    public void prepare() {
         binlogManager = mock(MysqlBinlogManager.class);
         positionHandler = spy(new PositionHandler(binlogManager));
         doReturn(false).when(positionHandler).isFinish(any(), anyString(), anyLong());
     }
 
     @Before
-    public void prepareRotateEvent(){
+    public void prepareRotateEvent() {
         rotateEvent = mock(Event.class);
         EventHeaderV4 header = mock(EventHeaderV4.class);
         RotateEventData data = mock(RotateEventData.class);
@@ -38,7 +38,7 @@ public class TestPositionHandler {
     }
 
     @Before
-    public void prepareInsertEvent(){
+    public void prepareInsertEvent() {
         insertEvent = mock(Event.class);
         EventHeaderV4 header = mock(EventHeaderV4.class);
         WriteRowsEventData data = mock(WriteRowsEventData.class);
@@ -56,7 +56,7 @@ public class TestPositionHandler {
     }
 
     @Test
-    public void storeOnlyPosition(){
+    public void storeOnlyPosition() {
         positionHandler.handle(insertEvent);
         verify(binlogManager, never()).setBinlogFilename(anyString());
         verify(binlogManager).setBinlogPosition(5678L);

@@ -83,7 +83,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -137,7 +137,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -156,7 +156,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''", result);
     }
 
     @Test
@@ -165,7 +165,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` CHANGE `enum_col` `enum_col` enum(\\\"foo\\\", \\\"bar\\\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` CHANGE `enum_col` `enum_col` enum(\\\"foo\\\", \\\"bar\\\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''", result);
     }
 
     @Test
@@ -174,7 +174,7 @@ public class TestQueryEventHandler {
         String databaseName = "db";
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
-        assertEquals("ALTER TABLE `sample` CHANGE `enum_col` `enum_col` enum(\\\"foo\\\", \\\"bar\\\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''",result);
+        assertEquals("ALTER TABLE `sample` CHANGE `enum_col` `enum_col` enum(\\\"foo\\\", \\\"bar\\\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''", result);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class TestQueryEventHandler {
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
         // TODO: remove space
-        assertEquals("ALTER  TABLE `sample` CHANGE `enum_col` `enum_col` enum(\\\"foo\\\", \\\"bar\\\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''",result);
+        assertEquals("ALTER  TABLE `sample` CHANGE `enum_col` `enum_col` enum(\\\"foo\\\", \\\"bar\\\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''", result);
     }
 
     @Test
@@ -195,6 +195,6 @@ public class TestQueryEventHandler {
         String tableName = "sample";
         String result = QueryEventHandler.normalizeQuery(query, databaseName, tableName);
         // TODO: remove break line
-        assertEquals("ALTER \nTABLE `sample` CHANGE `enum_col` `enum_col` enum(\\\"foo\\\", \\\"bar\\\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''",result);
+        assertEquals("ALTER \nTABLE `sample` CHANGE `enum_col` `enum_col` enum(\\\"foo\\\", \\\"bar\\\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''", result);
     }
 }

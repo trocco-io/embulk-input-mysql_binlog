@@ -30,13 +30,13 @@ public class QueryEventHandler implements BinlogEventHandler {
         this.tableManager = tableManager;
     }
 
-    public List<String> handle(Event event){
+    public List<String> handle(Event event) {
         QueryEventData queryEvent = event.getData();
         String query = queryEvent.getSql();
-        if (!tableManager.getDatabaseName().equals(queryEvent.getDatabase())){
+        if (!tableManager.getDatabaseName().equals(queryEvent.getDatabase())) {
             return Collections.emptyList();
         }
-        if (!shouldProcessQuery(query, tableManager.getTableName())){
+        if (!shouldProcessQuery(query, tableManager.getTableName())) {
             return Collections.emptyList();
         }
 
@@ -51,27 +51,27 @@ public class QueryEventHandler implements BinlogEventHandler {
     }
 
     @VisibleForTesting
-   public static boolean shouldProcessQuery(String query, String tableName){
-        try{
+    public static boolean shouldProcessQuery(String query, String tableName) {
+        try {
             Statement statement = CCJSqlParserUtil.parse(query);
             if (statement instanceof Alter) {
                 Alter alter = (Alter) statement;
                 String alterTableName = alter.getTable().getName().replaceAll("`", "");
                 return alterTableName.equals(tableName);
-            }else{
+            } else {
                 return false;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.debug("failback to regex");
             logger.debug(e.getMessage());
             return shouldProcessQueryRegex(query, tableName);
         }
-   }
+    }
 
     // First use lib to parse sql
     // if fail use regex to support corner case
     @VisibleForTesting
-    public static boolean shouldProcessQueryRegex(String query, String tableName){
+    public static boolean shouldProcessQueryRegex(String query, String tableName) {
         query = removeSqlComment(query);
         Pattern pattern = Pattern.compile(String.format("^alter\\s+table\\s+.*%s`*\\s+", tableName), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(query.trim());
@@ -79,13 +79,13 @@ public class QueryEventHandler implements BinlogEventHandler {
     }
 
     @VisibleForTesting
-    public static String removeSqlComment(String query){
+    public static String removeSqlComment(String query) {
         return query.replaceAll("(--.*)|(((/\\*)+?[\\w\\W]+?(\\*/)+))", "");
     }
 
     @VisibleForTesting
-    public static String normalizeQuery(String query, String daabaseName, String tableName){
-        try{
+    public static String normalizeQuery(String query, String databaseName, String tableName) {
+        try {
             Statement statement = CCJSqlParserUtil.parse(query);
             if (statement instanceof Alter) {
                 Alter alter = (Alter) statement;
@@ -97,13 +97,13 @@ public class QueryEventHandler implements BinlogEventHandler {
                 String alterExpressions = alter.getAlterExpressions().stream().map(AlterExpression::toString).collect(Collectors.joining(","));
                 sb.append(alterExpressions);
                 return sb.toString();
-            }else{
+            } else {
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.debug("fail back to regex");
             logger.debug(e.getMessage());
-            return normalizeQueryRegex(query, daabaseName, tableName);
+            return normalizeQueryRegex(query, databaseName, tableName);
         }
     }
 
@@ -113,7 +113,7 @@ public class QueryEventHandler implements BinlogEventHandler {
     // ALTER TABLE cdc.sample ADD COLUMN `add2` float NULL COMMENT ''
     // => ALTER TABLE `sample` ADD COLUMN `add2` float NULL COMMENT ''
     @VisibleForTesting
-    public static String normalizeQueryRegex(String query, String databaseName, String tableName){
+    public static String normalizeQueryRegex(String query, String databaseName, String tableName) {
         // TODO: use antlr or other library
         // JSQLParser does not work for this case
         // "ALTER TABLE `mytable` CHANGE `enum_col` `enum_col` enum(\"foo\", \"bar\") CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT ''";

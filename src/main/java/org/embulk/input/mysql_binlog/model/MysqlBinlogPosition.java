@@ -18,11 +18,11 @@ public class MysqlBinlogPosition {
         MysqlBinlogPosition.currentDdl = currentDdl;
     }
 
-    public static String getCurrentBinlogFilename(){
+    public static String getCurrentBinlogFilename() {
         return currentBinlogFilename;
     }
 
-    public static void setCurrentBinlogFilename(String binlogFilename){
+    public static void setCurrentBinlogFilename(String binlogFilename) {
         currentBinlogFilename = binlogFilename;
     }
 
@@ -38,15 +38,15 @@ public class MysqlBinlogPosition {
         return toBinlogFilename;
     }
 
-    public static void setToBinlogFilename(String binlogFilename){
+    public static void setToBinlogFilename(String binlogFilename) {
         toBinlogFilename = binlogFilename;
     }
 
-    public static long getToBinlogPosition(){
+    public static long getToBinlogPosition() {
         return toBinlogPosition;
     }
 
-    public static void setToBinlogPosition(long binlogPosition){
+    public static void setToBinlogPosition(long binlogPosition) {
         toBinlogPosition = binlogPosition;
     }
 }

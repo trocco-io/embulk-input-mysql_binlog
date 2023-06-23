@@ -7,14 +7,14 @@ import org.embulk.input.mysql_binlog.model.Row;
 public class MysqlBinlogAccessor {
     private final Row row;
 
-    public MysqlBinlogAccessor(final Row row){
+    public MysqlBinlogAccessor(final Row row) {
         this.row = row;
     }
 
-    public String get(String name){
-        for (Cell cell:
-             this.row.getCells()) {
-            if (cell.getColumn().getName().equals(name)){
+    public String get(String name) {
+        for (Cell cell :
+                this.row.getCells()) {
+            if (cell.getColumn().getName().equals(name)) {
                 return cell.getValueWithString();
             }
         }

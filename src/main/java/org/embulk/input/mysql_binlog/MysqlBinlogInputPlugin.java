@@ -15,16 +15,13 @@ import org.embulk.spi.*;
 import org.embulk.spi.type.Types;
 
 public class MysqlBinlogInputPlugin
-        implements InputPlugin
-{
+        implements InputPlugin {
     private MysqlBinlogManager binlogManager;
 
 
     @Override
     public ConfigDiff transaction(ConfigSource config,
-            InputPlugin.Control control)
-    {
-
+                                  InputPlugin.Control control) {
 
 
         PluginTask task = config.loadConfig(PluginTask.class);
@@ -37,9 +34,8 @@ public class MysqlBinlogInputPlugin
 
     @Override
     public ConfigDiff resume(TaskSource taskSource,
-            Schema schema, int taskCount,
-            InputPlugin.Control control)
-    {
+                             Schema schema, int taskCount,
+                             InputPlugin.Control control) {
         PluginTask task = taskSource.loadTask(PluginTask.class);
         control.run(taskSource, schema, taskCount);
 
@@ -52,9 +48,9 @@ public class MysqlBinlogInputPlugin
         configDiff.set("from_binlog_position", MysqlBinlogPosition.getCurrentBinlogPosition());
         // from & to are equal nothing changed
         // TODO: refactor later
-        if (task.getToBinlogFilename().isPresent() && task.getToBinlogPosition().isPresent()){
+        if (task.getToBinlogFilename().isPresent() && task.getToBinlogPosition().isPresent()) {
             if (task.getFromBinlogFilename().equals(task.getToBinlogFilename().get())
-                    && task.getFromBinlogPosition().equals(task.getToBinlogPosition().get())){
+                    && task.getFromBinlogPosition().equals(task.getToBinlogPosition().get())) {
                 configDiff.set("from_binlog_filename", task.getToBinlogFilename().get());
                 configDiff.set("from_binlog_position", task.getToBinlogPosition().get());
             }
@@ -68,29 +64,26 @@ public class MysqlBinlogInputPlugin
 
     @Override
     public void cleanup(TaskSource taskSource,
-            Schema schema, int taskCount,
-            List<TaskReport> successTaskReports)
-    {
+                        Schema schema, int taskCount,
+                        List<TaskReport> successTaskReports) {
     }
 
     @Override
     public TaskReport run(TaskSource taskSource,
-            Schema schema, int taskIndex,
-            PageOutput output)
-    {
+                          Schema schema, int taskIndex,
+                          PageOutput output) {
         PluginTask task = taskSource.loadTask(PluginTask.class);
         try {
-            try (PageBuilder pageBuilder = getPageBuilder(schema, output)) {
-                this.binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
-                this.binlogManager.connect();
-            }
+            PageBuilder pageBuilder = getPageBuilder(schema, output);
+            this.binlogManager = new MysqlBinlogManager(task, pageBuilder, schema);
+            this.binlogManager.connect();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
         return Exec.newTaskReport();
     }
 
-    private Schema buildSchema(PluginTask task){
+    private Schema buildSchema(PluginTask task) {
         int i = 0;
         // TODO: build schema based on sql
 
@@ -102,16 +95,16 @@ public class MysqlBinlogInputPlugin
             builder.add(outputColumn);
         }
         // add meta data schema
-        if (task.getEnableMetadataDeleted()){
+        if (task.getEnableMetadataDeleted()) {
             Column deleteFlagColumn = new Column(i++, MysqlBinlogUtil.getDeleteFlagName(task), Types.BOOLEAN);
             builder.add(deleteFlagColumn);
         }
-        if (task.getEnableMetadataFetchedAt()){
+        if (task.getEnableMetadataFetchedAt()) {
             Column fetchedAtColumn = new Column(i++, MysqlBinlogUtil.getFetchedAtName(task), Types.TIMESTAMP);
             builder.add(fetchedAtColumn);
         }
 
-        if (task.getEnableMetadataSeq()){
+        if (task.getEnableMetadataSeq()) {
             Column seqColumn = new Column(i++, MysqlBinlogUtil.getSeqName(task), Types.LONG);
             builder.add(seqColumn);
         }
@@ -120,14 +113,12 @@ public class MysqlBinlogInputPlugin
     }
 
     @VisibleForTesting
-    protected PageBuilder getPageBuilder(final Schema schema, final PageOutput output)
-    {
+    protected PageBuilder getPageBuilder(final Schema schema, final PageOutput output) {
         return new PageBuilder(Exec.getBufferAllocator(), schema, output);
     }
 
     @Override
-    public ConfigDiff guess(ConfigSource config)
-    {
+    public ConfigDiff guess(ConfigSource config) {
         return Exec.newConfigDiff();
     }
 }

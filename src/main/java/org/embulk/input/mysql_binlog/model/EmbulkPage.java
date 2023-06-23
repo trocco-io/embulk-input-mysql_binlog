@@ -19,7 +19,7 @@ public class EmbulkPage {
     private final Column fetchedAtColumn;
     private final Column seqColumn;
 
-    public EmbulkPage(PluginTask task, PageBuilder pageBuilder, Schema schema){
+    public EmbulkPage(PluginTask task, PageBuilder pageBuilder, Schema schema) {
         this.task = task;
         this.pageBuilder = pageBuilder;
         this.schema = schema;
@@ -32,15 +32,15 @@ public class EmbulkPage {
                 JDBCType.BIGINT, "BIGINT", Collections.emptyList(), task);
     }
 
-    public void addRecords(List<Row> rows, boolean deleteFlag){
-        for (Row row: rows) {
+    public void addRecords(List<Row> rows, boolean deleteFlag) {
+        for (Row row : rows) {
             List<Cell> cells = row.getCells();
-            if (task.getEnableMetadataDeleted()){
+            if (task.getEnableMetadataDeleted()) {
                 Cell deleteFlagCell = new Cell(deleteFlag, deleteFlagColumn);
                 cells.add(deleteFlagCell);
             }
 
-            if (task.getEnableMetadataFetchedAt()){
+            if (task.getEnableMetadataFetchedAt()) {
                 // value is stored in column visitor
                 Cell fetchedAtCell = new Cell(null, fetchedAtColumn);
                 cells.add(fetchedAtCell);
@@ -59,7 +59,7 @@ public class EmbulkPage {
         }
     }
 
-    public void flush(){
+    public void flush() {
         this.pageBuilder.flush();
     }
 }
