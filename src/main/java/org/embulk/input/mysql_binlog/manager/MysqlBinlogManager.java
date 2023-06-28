@@ -40,7 +40,7 @@ public class MysqlBinlogManager {
         this.setCurrentDdl(t.toDdl());
 
         DbInfo dbInfo = MysqlBinlogClient.convertTaskToDbInfo(task);
-        this.client = new MysqlBinlogClient(dbInfo, getBinlogFilename(), getBinlogPosition());
+        this.client = new MysqlBinlogClient(dbInfo, getBinlogFilename());
         this.registerHandler();
         this.client.registerEventListener(handler);
     }
@@ -67,7 +67,7 @@ public class MysqlBinlogManager {
     }
 
     public void disconnect() {
-        try {
+あああああ        try {
             this.client.disconnect();
         } catch (IOException e) {
             System.out.println(e.getMessage());
