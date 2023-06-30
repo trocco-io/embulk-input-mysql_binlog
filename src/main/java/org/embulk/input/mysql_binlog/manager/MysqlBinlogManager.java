@@ -67,11 +67,19 @@ public class MysqlBinlogManager {
     }
 
     public void disconnect() {
-あああああ        try {
+        try {
             this.client.disconnect();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public String getInitialBinlogFilename() {
+        return this.task.getFromBinlogFilename();
+    }
+
+    public long getInitialBinlogPosition() {
+        return this.task.getFromBinlogPosition();
     }
 
     public void setBinlogFilename(String binlogFilename) {
