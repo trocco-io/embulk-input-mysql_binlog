@@ -110,8 +110,10 @@ public class MysqlBinlogManager {
         this.handler.registerHandler(new InsertEventHandler(this.tableManager, this), EventType.WRITE_ROWS, EventType.EXT_WRITE_ROWS);
         this.handler.registerHandler(new UpdateEventHandler(this.tableManager, this), EventType.UPDATE_ROWS, EventType.EXT_UPDATE_ROWS);
         this.handler.registerHandler(new DeleteEventHandler(this.tableManager, this), EventType.DELETE_ROWS, EventType.EXT_DELETE_ROWS);
-        this.handler.registerHandler(new TableMapEventHandler(this.tableManager), EventType.TABLE_MAP);
         this.handler.registerHandler(new QueryEventHandler(this.tableManager), EventType.QUERY);
+
+        this.handler.registerAlwaysHandler(new TableMapEventHandler(this.tableManager), EventType.TABLE_MAP);
+
         this.handler.registerPositionHandler(new PositionHandler(this));
     }
 }

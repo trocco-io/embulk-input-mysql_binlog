@@ -13,9 +13,17 @@ import java.util.Map;
 
 public class MysqlBinlogEventHandler implements BinlogEventHandler {
     private final Map<EventType, BinlogEventHandler> handlers = new HashMap<>();
+
+    private final Map<EventType, BinlogEventHandler> alwaysHandlers = new HashMap<>();
     private PositionHandler positionHandler;
 
     public void registerHandler(BinlogEventHandler handler, EventType... eventTypes) {
+        for (EventType eventType : eventTypes) {
+            handlers.put(eventType, handler);
+        }
+    }
+
+    public void registerAlwaysHandler(BinlogEventHandler handler, EventType... eventTypes) {
         for (EventType eventType : eventTypes) {
             handlers.put(eventType, handler);
         }
@@ -30,6 +38,11 @@ public class MysqlBinlogEventHandler implements BinlogEventHandler {
     }
 
     public List<String> handle(Event event) {
+        BinlogEventHandler alwaysHandler = alwaysHandlers.get(event.getHeader().getEventType());
+        if (alwaysHandler != null) {
+            alwaysHandler.handle(event);
+        }
+
         if (shouldHandleEvent(event)){
             BinlogEventHandler handler = handlers.get(event.getHeader().getEventType());
             if (handler != null) {
@@ -39,5 +52,4 @@ public class MysqlBinlogEventHandler implements BinlogEventHandler {
         positionHandler.handle(event);
         return Collections.emptyList();
     }
-
 }
