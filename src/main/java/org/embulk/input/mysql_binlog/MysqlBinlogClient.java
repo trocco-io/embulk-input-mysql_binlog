@@ -25,7 +25,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     }
 
 
-    public MysqlBinlogClient(DbInfo dbInfo, String binlogFilename, long binlogPosition) {
+    public MysqlBinlogClient(DbInfo dbInfo, String binlogFilename) {
         client = new BinaryLogClient(dbInfo.getHost(), dbInfo.getPort(), dbInfo.getUser(), dbInfo.getPassword());
         EventDeserializer eventDeserializer = new EventDeserializer();
         eventDeserializer.setCompatibilityMode(
@@ -33,7 +33,6 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
         );
         client.setEventDeserializer(eventDeserializer);
         client.setBinlogFilename(binlogFilename);
-        client.setBinlogPosition(binlogPosition);
         client.setBlocking(false);
         client.registerLifecycleListener(this);
     }

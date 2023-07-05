@@ -14,19 +14,36 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class PositionHandler implements BinlogEventHandler {
     private final Logger logger = LoggerFactory.getLogger(PositionHandler.class);
     private final MysqlBinlogManager binlogManager;
 
+    private boolean afterInitialBinlogFile = false;
+
     public PositionHandler(MysqlBinlogManager binlogManager) {
         this.binlogManager = binlogManager;
+    }
+
+    public boolean shouldHandle(Event event) {
+        if (afterInitialBinlogFile){
+            return true;
+        }else{
+            EventHeaderV4 header = event.getHeader();
+            return header.getPosition() >= binlogManager.getInitialBinlogPosition();
+        }
     }
 
     public List<String> handle(Event event) {
         EventHeaderV4 header = event.getHeader();
         if (header.getEventType() == EventType.ROTATE) {
             RotateEventData rotateEvent = event.getData();
+            String binlogFilename = rotateEvent.getBinlogFilename();
+            if (compareBinlogFilename(binlogFilename, this.binlogManager.getInitialBinlogFilename()) > 0) {
+                this.afterInitialBinlogFile = true;
+            }
             this.binlogManager.setBinlogFilename(rotateEvent.getBinlogFilename());
             logger.info("binlog file: {}", rotateEvent.getBinlogFilename());
             // flush embulk page
@@ -62,5 +79,21 @@ public class PositionHandler implements BinlogEventHandler {
             }
         }
         return false;
+    }
+
+    public int compareBinlogFilename(String s1, String s2) {
+        Pattern pattern = Pattern.compile("\\d+$");
+
+        Matcher matcher1 = pattern.matcher(s1);
+        Matcher matcher2 = pattern.matcher(s2);
+
+        if (matcher1.find() && matcher2.find()) {
+            String number1 = matcher1.group();
+            String number2 = matcher2.group();
+
+            return Integer.compare(Integer.parseInt(number1), Integer.parseInt(number2));
+        }
+
+        return 0;
     }
 }
