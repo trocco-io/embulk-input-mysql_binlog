@@ -25,7 +25,7 @@ public class MysqlBinlogEventHandler implements BinlogEventHandler {
 
     public void registerAlwaysHandler(BinlogEventHandler handler, EventType... eventTypes) {
         for (EventType eventType : eventTypes) {
-            handlers.put(eventType, handler);
+            alwaysHandlers.put(eventType, handler);
         }
     }
 
