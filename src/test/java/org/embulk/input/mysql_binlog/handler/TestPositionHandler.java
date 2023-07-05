@@ -50,6 +50,7 @@ public class TestPositionHandler {
 
     @Test
     public void storeBinlogFilenameAndPosition() {
+        doReturn(1).when(positionHandler).compareBinlogFilename(anyString(), anyString());
         positionHandler.handle(rotateEvent);
         verify(binlogManager).setBinlogFilename("mysql-bin.000002");
         verify(binlogManager).setBinlogPosition(1234L);
