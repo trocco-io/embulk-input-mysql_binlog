@@ -35,6 +35,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
         client.setBinlogFilename(binlogFilename);
         client.setBlocking(false);
         client.registerLifecycleListener(this);
+        client.setHeartbeatInterval(client.getKeepAliveInterval() / 2);
     }
 
     public void registerEventListener(BinlogEventHandler binlogEventHandler) {
