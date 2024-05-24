@@ -2,6 +2,7 @@ package org.embulk.input.mysql_binlog;
 
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
+import com.github.shyiko.mysql.binlog.network.SSLMode;
 import org.embulk.input.mysql_binlog.handler.*;
 import org.embulk.input.mysql_binlog.model.DbInfo;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
     }
 
 
-    public MysqlBinlogClient(DbInfo dbInfo, String binlogFilename) {
+    public MysqlBinlogClient(DbInfo dbInfo, String binlogFilename, SSLMode sslMode) {
         client = new BinaryLogClient(dbInfo.getHost(), dbInfo.getPort(), dbInfo.getUser(), dbInfo.getPassword());
         EventDeserializer eventDeserializer = new EventDeserializer();
         eventDeserializer.setCompatibilityMode(
@@ -36,6 +37,7 @@ public class MysqlBinlogClient implements BinaryLogClient.LifecycleListener {
         client.setBlocking(false);
         client.registerLifecycleListener(this);
         client.setHeartbeatInterval(client.getKeepAliveInterval() / 2);
+        client.setSSLMode(sslMode);
     }
 
     public void registerEventListener(BinlogEventHandler binlogEventHandler) {
