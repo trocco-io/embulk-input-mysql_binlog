@@ -40,7 +40,7 @@ public class MysqlBinlogManager {
         this.setCurrentDdl(t.toDdl());
 
         DbInfo dbInfo = MysqlBinlogClient.convertTaskToDbInfo(task);
-        this.client = new MysqlBinlogClient(dbInfo, getBinlogFilename());
+        this.client = new MysqlBinlogClient(dbInfo, getBinlogFilename(), task.getSslMode());
         this.registerHandler();
         this.client.registerEventListener(handler);
     }

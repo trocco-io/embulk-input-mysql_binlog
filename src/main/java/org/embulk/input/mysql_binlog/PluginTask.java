@@ -1,5 +1,6 @@
 package org.embulk.input.mysql_binlog;
 
+import com.github.shyiko.mysql.binlog.network.SSLMode;
 import com.google.common.base.Optional;
 import org.embulk.config.Config;
 import org.embulk.config.ConfigDefault;
@@ -64,6 +65,10 @@ public interface PluginTask
     @Config("ssl")
     @ConfigDefault("\"disable\"")
     Ssl getSsl();
+
+    @Config("ssl_mode")
+    @ConfigDefault("\"DISABLED\"")
+    SSLMode getSslMode();
 
     @Config("default_timezone")
     @ConfigDefault("\"UTC\"")
